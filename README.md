@@ -1,160 +1,67 @@
-# Cursor Commons
+# AI Commons
 
-A shared Cursor IDE configuration for teams. Includes custom commands and rules to standardize PR prep, onboarding, and code refactoring across projects.
+An enterprise-grade, scalable repository for sharing AI coding guidelines, domain-driven design principles, and custom agent rules across your entire engineering team. 
 
-## Table of Contents
+Unlike traditional dotfile overrides, AI Commons acts as a smart, dynamically compiled library that integrates perfectly with **Cursor, Copilot, and Antigravity** without polluting your global IDE configurations.
 
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Basic Installation](#basic-installation)
-  - [Manual Inspection](#manual-inspection)
-- [Using Cursor Commons](#using-cursor-commons)
-  - [Commands](#commands)
-  - [Rules](#rules)
-  - [MCP Servers](#mcp-servers)
-- [Updates](#updates)
-  - [Update Behavior](#update-behavior)
-  - [Manual Update](#manual-update)
-  - [Disable Update Check](#disable-update-check)
-- [Advanced Topics](#advanced-topics)
-  - [Custom Directory](#custom-directory)
-  - [Unattended Install](#unattended-install)
-  - [Custom Repository](#custom-repository)
-- [Uninstalling](#uninstalling)
+## 🚀 Features
 
-## Getting Started
+- **Editor Agnostic**: Write your AI rules strictly once in Markdown. The built-in CLI engine "compiles" them natively into `.cursor/rules`, `.agents/`, or `.github/copilot-instructions.md`.
+- **Ecosystem Targeting**: No more AI context bloat! Select exactly which framework you are working with (e.g., `react` or `python`) so your IDE only loads the rules relevant to that specific codebase.
+- **Interactive Setup Wizard**: Beautiful terminal UI lets developers use arrow keys to pick languages and editors natively without installing bulky third-party libraries.
+- **Auto-Updating State Tracker**: The CLI saves your project choices to a hidden `.ai-commons.json` file. Future runs automatically read this state to silently fetch the newest rules!
 
-### Prerequisites
+---
 
-- **git** (v2.4.11 or higher recommended)
-- **curl** or **wget**
+## 🛠️ Getting Started 
 
-### Basic Installation
+Integrating the AI Commons rules into any repository on your machine takes exactly one command. You do not need to clone this repository manually.
 
-Cursor Commons is installed by running one of the following commands in your terminal:
-
-| Method   | Command                                                                 |
-| -------- | ----------------------------------------------------------------------- |
-| **curl** | `sh -c "$(curl -fsSL https://raw.githubusercontent.com/kaushalrao/aifsd-commons/develop/tools/install.sh)"` |
-| **wget** | `sh -c "$(wget -qO- https://raw.githubusercontent.com/kaushalrao/aifsd-commons/develop/tools/install.sh)"` |
-
-_Note: Any existing `~/.cursor` will be backed up to `~/.cursor.pre-cursor-commons`. After installation, you can merge any customizations you want to keep into the new `~/.cursor`._
-
-#### Manual Inspection
-
-It's a good idea to inspect the install script before running it. Download the script first, review it, then run:
+Navigate to your active project folder in your terminal and run:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/kaushalrao/aifsd-commons/develop/tools/install.sh" -o install.sh
-# Review install.sh
-sh install.sh
+npx github:kaushalrao/aifsd-commons#develop
 ```
 
-Alternatively, clone the repository and run the script locally:
+### The Setup Wizard
+If you run the initialization command without any explicit arguments, it will open an interactive setup wizard:
+1. **Choose your IDE Adapter:** (Cursor, Antigravity, etc.)
+2. **Select your Ecosystems:** Press **Space** to toggle the languages your project uses (e.g. `[x] react`, `[ ] python`).
+
+When you hit **Enter**, it will instantly compile and inject the AI rules natively into your repository!
+
+### Silent Flag Overrides
+For CI/CD scripts or power users, you can bypass the interactive wizard by specifying your targets via flags:
+```bash
+npx github:kaushalrao/aifsd-commons#develop --editor=cursor --language=react,api-design
+```
+
+---
+
+## 🔄 Updating Your Rules
+
+Whenever the central team publishes new security guidelines or refactoring prompt macros to this repository, you simply run the exact same `npx` command in your terminal again!
 
 ```bash
-git clone https://github.com/kaushalrao/aifsd-commons.git ~/.cursor-commons
-sh ~/.cursor-commons/tools/install.sh
+npx -y github:kaushalrao/aifsd-commons#develop
 ```
 
-## Using Cursor Commons
+**State Persistence:** Because your initial installation stored a `.ai-commons.json` file in your repository root, the CLI will skip the interactive wizard entirely and silently update your rules in the background based on your previously saved preferences!
 
-### Commands
+---
 
-Cursor Commons provides custom Cursor commands in `~/.cursor/commands/`:
+## 📂 Architecture & Adding Rules
 
-| Command            | Description                                                                 |
-| ------------------ | --------------------------------------------------------------------------- |
-| **pr-prep**       | Prepare for peer review: review branch changes, generate PR title (Conventional Commits), summary, test plan, risk assessment, and check for leftover `console.log` / `System.out.println` |
-| **onboard**       | Generate a "New Hire Welcome Guide" with architecture overview, key directories, data flow, dependent repos, and setup steps |
-| **leancode-refactor** | Refactor and tidy code: remove redundant comments, fix code smells, enforce DRY, guard clauses, formatting, and anti-hallucination checks |
+To contribute new intelligence to the AI Commons repository, understand that rules are strictly separated by domain so they can be accurately compiled by the `adapters/`:
 
-### Rules
-
-Custom rules can be placed in `~/.cursor/rules/` to enforce team conventions across projects.
-
-### MCP Servers
-
-The **sequential-thinking** server runs locally via `npx` and does not require any environment variables.
-
-## Updates
-
-### Update Behavior
-
-By default, Cursor Commons checks for updates every **14 days** when you start a new shell. If a newer version is available (based on the `MANIFEST` version), you'll see a message like:
-
-```
-[cursor-commons] A new version is available!
-  Local:  1.0.0
-  Remote: 1.1.0
-  Run cursor-commons-update to upgrade.
+```text
+ai-commons/
+├── 1-core-principles/         # Universal rules (e.g., Architecture, Security)
+├── 2-ecosystems/              # Framework-specific rules (e.g., Python, React)
+├── 3-prompt-macros/           # Slash commands accessible by the user
+├── 4-agents/                  # Complex agent persona definitions
+└── adapters/                  # Compiler logic that translates rules to IDEs
 ```
 
-### Manual Update
-
-To update at any time:
-
-```bash
-cursor-commons-update
-```
-
-Or run the upgrade script directly:
-
-```bash
-sh ~/.cursor-commons/tools/upgrade.sh
-```
-
-### Disable Update Check
-
-Add this to your `~/.bashrc` or `~/.zshrc` **before** the Cursor Commons hook:
-
-```bash
-export CURSOR_COMMONS_UPDATE_DISABLED=1
-```
-
-To change the check frequency (in days):
-
-```bash
-export CURSOR_COMMONS_UPDATE_DAYS=7
-```
-
-## Advanced Topics
-
-### Custom Directory
-
-By default, Cursor Commons is installed to `~/.cursor-commons`. To use a different location:
-
-```bash
-CURSOR_COMMONS_HOME="$HOME/.dotfiles/cursor-commons" sh -c "$(curl -fsSL ...)"
-```
-
-### Unattended Install
-
-For automated or non-interactive installation:
-
-```bash
-sh -c "$(curl -fsSL ...)" -- --unattended
-```
-
-### Custom Repository
-
-To install from a fork or different branch:
-
-```bash
-REMOTE=https://github.com/your-org/cursor-commons.git BRANCH=main sh -c "$(curl -fsSL ...)"
-```
-
-## Uninstalling
-
-To uninstall Cursor Commons:
-
-1. Remove the hook block from your `~/.bashrc` or `~/.zshrc` (search for "Cursor Commons").
-2. Remove the installation directory:
-   ```bash
-   rm -rf ~/.cursor-commons
-   ```
-3. Optionally restore your previous `.cursor`:
-   ```bash
-   rm -rf ~/.cursor
-   mv ~/.cursor.pre-cursor-commons ~/.cursor
-   ```
+**To add a new language:** 
+Simply create a new folder under `2-ecosystems/` (e.g. `2-ecosystems/go/`). The CLI engine dynamically scans this directory and will instantly present 'go' as an option in your interactive Terminal UI!

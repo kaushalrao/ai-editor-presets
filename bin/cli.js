@@ -30,8 +30,6 @@ function runCompiler(editor, languages) {
     try {
         adapter.compile(repoRoot, targetDir, languages);
         console.log(`\n✅ AI Commons rules synced successfully for ${editor}!`);
-        console.log(`You are now ready to code!`);
-        process.exit(0);
     } catch (e) {
         console.error(`\n❌ Error during sync:`, e.stack || e.message);
         process.exit(1);
@@ -46,7 +44,7 @@ async function singleSelectPrompt(message, options) {
             console.log(`🚀 Welcome to the AI Commons Setup CLI!\n`);
             console.log(message);
             console.log("(Use arrow keys to navigate, Enter to confirm)\n");
-            
+
             options.forEach((opt, i) => {
                 const isHovered = i === cursor;
                 const prefix = isHovered ? '> (o)' : '  ( )';
@@ -80,13 +78,13 @@ async function multiSelectPrompt(message, options) {
     return new Promise(resolve => {
         let cursor = 0;
         const selected = new Set();
-        
+
         const render = () => {
             console.clear();
             console.log(`🚀 Welcome to the AI Commons Setup CLI!\n`);
             console.log(message);
             console.log("(Use arrow keys to navigate, Space to toggle, Enter to confirm)\n");
-            
+
             options.forEach((opt, i) => {
                 const isSelected = selected.has(i);
                 const isHovered = i === cursor;
@@ -123,13 +121,47 @@ async function multiSelectPrompt(message, options) {
     });
 }
 
+const configPath = path.join(targetDir, '.ai-commons.json');
+
+function saveConfigAndRun(editor, languages) {
+    let currentConfig = {};
+    if (fs.existsSync(configPath)) {
+        try { Object.assign(currentConfig, JSON.parse(fs.readFileSync(configPath, 'utf8'))); } catch (e) { }
+    }
+
+    currentConfig[editor] = languages;
+    fs.writeFileSync(configPath, JSON.stringify(currentConfig, null, 2));
+
+    runCompiler(editor, languages);
+}
+
 async function execute() {
     let editor = editorArg ? editorArg.split('=')[1] : null;
     let languagesText = languageArg ? languageArg.split('=')[1] : null;
 
+    // Auto-update if config exists and no explicit flags are passed
+    if (fs.existsSync(configPath) && !editor && languagesText === null) {
+        console.log("📂 Found existing .ai-commons.json configuration! Updating silently...");
+        try {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            if (config.editor) {
+                // Handle legacy format gracefully
+                runCompiler(config.editor, config.languages);
+            } else {
+                // Handle the new dictionary mapping to seamlessly auto-update all installed IDE rules at once!
+                for (const [savedEditor, savedLanguages] of Object.entries(config)) {
+                    runCompiler(savedEditor, savedLanguages);
+                }
+            }
+            return;
+        } catch (e) {
+            console.log("⚠️  Could not read existing config. Defaulting to setup wizard.");
+        }
+    }
+
     if (editor && languagesText !== null) {
         const languages = languagesText ? languagesText.split(',').map(s => s.trim()).filter(Boolean) : [];
-        runCompiler(editor, languages);
+        saveConfigAndRun(editor, languages);
         return;
     }
 
@@ -143,9 +175,9 @@ async function execute() {
     } else {
         languages = languagesText ? languagesText.split(',').map(s => s.trim()).filter(Boolean) : [];
     }
-    
+
     console.clear();
-    runCompiler(editor, languages);
+    saveConfigAndRun(editor, languages);
 }
 
 execute();
