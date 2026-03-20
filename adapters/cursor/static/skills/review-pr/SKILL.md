@@ -19,7 +19,9 @@ Determine the review mode from what the user provided:
 ## MODE A — BITBUCKET PR
 
 ### A0: Preflight
+
 Call `getProjects` (server: `bitbucket`) with no arguments.
+
 - Success → proceed.
 - Error → stop and output:
 
@@ -27,6 +29,7 @@ Call `getProjects` (server: `bitbucket`) with no arguments.
 > Add the Bitbucket MCP server in Cursor → Settings → MCP (server identifier: `bitbucket`), restart Cursor, and retry.
 
 ### A1: Parse the PR URL
+
 Pattern: `https://<host>/projects/<PROJECT_KEY>/repos/<repo-slug>/pull-requests/<ID>/...`
 
 | Variable | Source | Example |
@@ -36,13 +39,16 @@ Pattern: `https://<host>/projects/<PROJECT_KEY>/repos/<repo-slug>/pull-requests/
 | `pullRequestId` | `/pull-requests/<X>/` | `986` |
 
 ### A2: Fetch PR metadata
+
 Call `getPage` (server: `bitbucket`):
+
 ```
 projectKey:     <parsed>
 repositorySlug: <parsed>
 state:          ALL
 limit:          10
 ```
+
 > Note: each page is large (~60 KB for 10 results). Parse only the fields you need and discard the rest immediately.
 
 Paginate (increment `start` by 10) until the item with `id == pullRequestId` is found.
@@ -51,7 +57,9 @@ Paginate (increment `start` by 10) until the item with `id == pullRequestId` is 
 Record: `title`, `description`, `fromRef.displayId`, `fromRef.latestCommit`, `toRef.displayId`, `toRef.latestCommit`, `author.user.displayName`, reviewer names.
 
 ### A3: Fetch all diffs in one call
+
 Call `streamDiff_1` (server: `bitbucket`) **with `path` set to empty string** — this returns the complete diff for every changed file in a single response:
+
 ```
 projectKey:     <parsed>
 repositorySlug: <parsed>
@@ -73,12 +81,15 @@ From the response, extract the list of changed files (`diffs[].destination.toStr
 **Line guard**: If the total diff lines across all files exceeds **10,000**, note which files were not fully analysed.
 
 ### A4: Fetch existing PR comments
+
 Call `getReview` (server: `bitbucket`):
+
 ```
 projectKey:     <parsed>
 repositorySlug: <parsed>
 pullRequestId:  <pullRequestId>
 ```
+
 Use returned threads to avoid re-raising already-discussed issues.
 
 ---
@@ -86,6 +97,7 @@ Use returned threads to avoid re-raising already-discussed issues.
 ## MODE B — LOCAL DIFF
 
 ### B1: Determine scope
+
 Ask the user (or infer from context) which changes to review:
 
 | User intent | Command to run |
@@ -97,6 +109,7 @@ Ask the user (or infer from context) which changes to review:
 Default to `git diff HEAD` if unspecified.
 
 ### B2: Get the file list and line counts
+
 Run: `git diff --stat <scope>`
 
 If total changed lines exceed **10,000** or files exceed **25**, tell the user:
@@ -105,9 +118,11 @@ If total changed lines exceed **10,000** or files exceed **25**, tell the user:
 **Skip**: binary files, lock files, generated files, pure deletions.
 
 ### B3: Fetch diffs
+
 Run: `git diff -U3 <scope> -- <file>` for each file in the prioritised list (same 25-file, 10,000-line caps).
 
 ### B4: Capture additional context (optional)
+
 If a finding requires verifying surrounding code not visible in the diff, run `git show HEAD:<file path>`.
 Fetch only the relevant section — do not load entire files.
 
@@ -119,6 +134,7 @@ Apply these rules to all collected diffs. The diff hunks are the primary source 
 Do NOT fetch additional content unless a specific finding requires confirmation.
 
 ### What to flag (high-signal only)
+
 - Correctness bugs / broken logic
 - Security vulnerabilities (auth bypass, injection, secrets in code, unsafe deserialization)
 - Data loss, privacy risk, permission escalation
@@ -129,12 +145,15 @@ Do NOT fetch additional content unless a specific finding requires confirmation.
 - Maintainability issues that create real divergence risk (duplicated logic, hidden coupling)
 
 ### What NOT to flag
+
 - Formatting, lint, minor refactors, "prefer X over Y" without concrete impact
 - Speculative issues ("might be slow") without evidence in the diff
 - Broad rewrites; keep suggestions minimal and scoped to the diff
 
 ### High-rigor verification protocol
+
 Before raising any finding:
+
 1. **Trace the data flow** — follow the actual path through all changed functions, not just the touched lines.
 2. **Verify with concrete examples** — walk through 2–3 specific input values to confirm the bug path.
 3. **Check coverage** — if a test file in the diff covers the scenario, do not flag it.
@@ -149,6 +168,7 @@ Only report findings you would stake your reputation on (≥80% confidence after
 ## PHASE 2 — OUTPUT (shared by both modes)
 
 ### Summary header
+
 ```
 Mode:    Bitbucket PR  |  Local Diff
 PR/Ref:  <title or git ref>
@@ -158,10 +178,12 @@ Files:   <N reviewed> of <total changed> (skipped: <reason if any>)
 ```
 
 ### Findings table
+
 | Finding ID | Severity | Confidence | Category | File | Line(s) | Issue | Evidence (snippet, ≤12 lines) | Fix suggestion | Risk if unfixed | Effort |
 |---|---|---|---|---|---|---|---|---|---|---|
 
 **Severity scale**:
+
 - `Blocker` — will likely break prod / security issue / data loss
 - `High` — probable bug or major reliability risk
 - `Medium` — plausible bug or meaningful maintainability risk
@@ -170,11 +192,13 @@ Files:   <N reviewed> of <total changed> (skipped: <reason if any>)
 Include `Confidence`: High / Medium / Low. Omit findings with Low confidence unless Severity is Blocker or High.
 
 ### After the table
+
 1. **Top 3 priorities** — only when Blocker/High items exist.
 2. **Suggested tests** — only when it materially reduces risk.
 3. **Not reviewed** — list files skipped by cap or skip rules so the author knows coverage gaps.
 4. **Non-issues intentionally ignored** — 1–5 bullets explaining what was examined and deliberately excluded.
 
 ### Posting findings (Bitbucket PR mode only)
+
 If the user asks to post findings as PR comments, call `createComment` (server: `bitbucket`) for each Blocker/High finding.
 Do not post Medium/Low findings as comments unless explicitly requested.

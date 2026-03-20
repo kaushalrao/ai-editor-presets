@@ -61,6 +61,7 @@ Process each approved issue **sequentially**.
   - **Side Effects:** Any downstream impact.
 
 **Confidence Gate:**
+
 - **HIGH confidence:** Proceed to 4b.
 - **MEDIUM or LOW confidence:** Do NOT attempt a fix. Present the analysis and ask the user how to proceed (provide a hint, skip, or mark for manual review). Never guess a fix.
 

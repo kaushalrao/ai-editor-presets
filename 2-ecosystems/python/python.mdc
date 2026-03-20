@@ -57,16 +57,20 @@ def process(items: List[str], limit: Optional[int] = None) -> Dict[str, int]:
 - Max ~20 lines per function body. Beyond that, extract helpers.
 - Prefer keyword arguments for functions with more than 2 parameters.
 - Use `*` to enforce keyword-only args for readability at call sites:
+
   ```python
   def send_email(*, to: str, subject: str, body: str) -> None: ...
   ```
+
 - Never use mutable defaults. Use `None` sentinel + guard:
+
   ```python
   def append(items: list[str] | None = None) -> list[str]:
       if items is None:
           items = []
       return items
   ```
+
 - Prefer returning early over deeply nested conditionals (guard clauses).
 - Use `@functools.cache` or `@functools.lru_cache` for pure functions with repeated calls.
 
@@ -84,11 +88,13 @@ def process(items: List[str], limit: Optional[int] = None) -> Dict[str, int]:
 
 - Catch specific exceptions — never bare `except:` or `except Exception:` unless re-raising.
 - Define custom exceptions inheriting from a project-level base exception:
+
   ```python
   class AppError(Exception): ...
   class ValidationError(AppError): ...
   class NotFoundError(AppError): ...
   ```
+
 - Always include context when re-raising: `raise NewError("ctx") from original_exc`.
 - Use `contextlib.suppress(ExcType)` for intentional swallowed exceptions — never silent `except: pass`.
 - Do not use exceptions for control flow (e.g., don't raise to signal "empty result").
@@ -99,6 +105,7 @@ def process(items: List[str], limit: Optional[int] = None) -> Dict[str, int]:
 - Use `pydantic-settings` for environment-based config with `.env` support.
 - Validate at the boundary (entry point). Assume internal data is already valid — don't re-validate downstream.
 - Use `Annotated` + `Field(...)` for constraints:
+
   ```python
   from typing import Annotated
   from pydantic import Field

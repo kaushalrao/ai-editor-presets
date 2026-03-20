@@ -1,6 +1,6 @@
 # AI Commons
 
-An enterprise-grade, scalable repository for sharing AI coding guidelines, domain-driven design principles, and custom agent rules across your entire engineering team. 
+An enterprise-grade, scalable repository for sharing AI coding guidelines, domain-driven design principles, and custom agent rules across your entire engineering team.
 
 Unlike traditional dotfile overrides, AI Commons acts as a smart, dynamically compiled library that integrates perfectly with **Cursor, Copilot, and Antigravity** without polluting your global IDE configurations.
 
@@ -13,7 +13,7 @@ Unlike traditional dotfile overrides, AI Commons acts as a smart, dynamically co
 
 ---
 
-## 🛠️ Getting Started 
+## 🛠️ Getting Started
 
 Integrating the AI Commons rules into any repository on your machine takes exactly one command. You do not need to clone this repository manually.
 
@@ -24,14 +24,18 @@ npx github:kaushalrao/aifsd-commons#develop
 ```
 
 ### The Setup Wizard
+
 If you run the initialization command without any explicit arguments, it will open an interactive setup wizard:
+
 1. **Choose your IDE Adapter:** (Cursor, Antigravity, etc.)
 2. **Select your Ecosystems:** Press **Space** to toggle the languages your project uses (e.g. `[x] react`, `[ ] python`).
 
 When you hit **Enter**, it will instantly compile and inject the AI rules natively into your repository!
 
 ### Silent Flag Overrides
+
 For CI/CD scripts or power users, you can bypass the interactive wizard by specifying your targets via flags:
+
 ```bash
 npx github:kaushalrao/aifsd-commons#develop --editor=cursor --language=react,api-design
 ```
@@ -63,5 +67,5 @@ ai-commons/
 └── adapters/                  # Compiler logic that translates rules to IDEs
 ```
 
-**To add a new language:** 
+**To add a new language:**
 Simply create a new folder under `2-ecosystems/` (e.g. `2-ecosystems/go/`). The CLI engine dynamically scans this directory and will instantly present 'go' as an option in your interactive Terminal UI!

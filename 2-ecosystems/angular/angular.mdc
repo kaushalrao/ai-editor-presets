@@ -8,7 +8,9 @@ alwaysApply: false
 **Goal:** High-density, minimalist Enterprise SaaS (Aesthetic: Linear, Vercel, Stripe).
 
 ### User Journey Analysis (Before Coding)
+
 Output `<user_journey_analysis>`:
+
 1. Persona: Who is this for? Technical proficiency?
 2. Job to be Done: Single primary goal of screen
 3. Spatial Architecture: Screen division (Sidebar nav, central table, details drawer)
@@ -18,6 +20,7 @@ Output `<user_journey_analysis>`:
 ### UI Design System
 
 **Visual Philosophy (Card-less Design):**
+
 - Avoid Card Bloat. No white boxes with shadows unless draggable/isolated widgets
 - Separation: Subtle borders (Custom Grey `#C4BEB6`)
 - Backgrounds: 95% White (`#FFFFFF`) or Light Gray (`#F9F9F9`)
@@ -25,11 +28,13 @@ Output `<user_journey_analysis>`:
 - Aesthetic: Modern, minimalist, technically precise
 
 **Typography:**
+
 - Font: Inter, Roboto, or SF Pro
 - Tabular Numbers: CRITICAL. Apply `font-variant-numeric: tabular-nums` to financial data, dates, IDs, counts
 - Hierarchy: Font weight and color contrast
 
 **Corporate Color Palette:**
+
 ```javascript
 colors: {
   brand: {
@@ -51,6 +56,7 @@ colors: {
 ```
 
 **Usage:**
+
 - Canvas: `bg-white`
 - Primary Text: `text-neutral-900` (Headings)
 - Secondary Text: `text-neutral-500` (Body/metadata)
@@ -60,6 +66,7 @@ colors: {
 - Success/Warning/Error: `brand-green`, `brand-orange`, `brand-red`
 
 **Component Standards:**
+
 - Primary Button: `bg-brand-blue hover:bg-opacity-90 text-white`
 - Secondary Button: `border-neutral-300 text-neutral-500 hover:bg-neutral-50`
 - Destructive Button: `text-brand-red hover:bg-red-50`
@@ -67,6 +74,7 @@ colors: {
 - Focus Rings: `ring-brand-blue`
 
 **Implementation:**
+
 - Framework: Angualr (Functional Components) if not specified
 - Styling: Tailwind CSS (define custom colors in config)
 - Icons: Lucide-React

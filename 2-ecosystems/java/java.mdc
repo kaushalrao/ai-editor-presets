@@ -12,7 +12,7 @@ alwaysApply: false
 - Max line length: 120 characters. Indent with 4 spaces — never tabs.
 - Opening brace on the same line (K&R style). Always use braces even for single-line `if`/`for`/`while`.
 - One blank line between methods. Two blank lines between top-level class declarations.
-- Imports: no wildcard imports (`import java.util.*`). Always explicit. Order: static imports → java.* → javax.* → third-party → local.
+- Imports: no wildcard imports (`import java.util.*`). Always explicit. Order: static imports → java.*→ javax.* → third-party → local.
 - Remove all unused imports. Configure IDE/build to fail on unused imports.
 - Avoid trailing whitespace. Files must end with a newline.
 
@@ -52,9 +52,11 @@ ArrayList<String> names = new ArrayList<>(); // implementation type leaked
 - Make classes `final` by default unless designed for inheritance.
 - Make fields `private final` by default. Only non-final when mutation is genuinely needed.
 - Use Java 17+ `record` for immutable data carriers — eliminates boilerplate `equals`/`hashCode`/`toString`:
+
   ```java
   public record Point(int x, int y) {}
   ```
+
 - Use `Collections.unmodifiableList()` / `List.copyOf()` when returning collections from getters.
 - Use `sealed` classes (Java 17+) to model closed type hierarchies (e.g., result types, domain events).
 
@@ -71,11 +73,13 @@ ArrayList<String> names = new ArrayList<>(); // implementation type leaked
 - Checked exceptions for recoverable, expected failures the caller must handle.
 - Unchecked (`RuntimeException`) for programming errors or unrecoverable failures.
 - Define a project-level exception hierarchy:
+
   ```java
   public class AppException extends RuntimeException { ... }
   public class NotFoundException extends AppException { ... }
   public class ValidationException extends AppException { ... }
   ```
+
 - Always include a message and cause when constructing exceptions: `new ServiceException("Failed to process order", cause)`.
 - Never swallow exceptions silently. At minimum: `log.error("...", e)` then rethrow or wrap.
 - Never catch `Exception`, `RuntimeException`, `Error`, or `Throwable` unless at a boundary (e.g., global handler).
@@ -284,11 +288,10 @@ project/
 ## Security
 
 - Never log or serialize sensitive fields — annotate with `@JsonIgnore`, `@ToString.Exclude`.
-- Never use `System.out.println` to check information. Log when in doubt. 
+- Never use `System.out.println` to check information. Log when in doubt.
 - Use parameterized queries always — never string-concatenated SQL.
 - Validate all input at API boundaries with Bean Validation (`@Valid`, `@NotNull`, `@Size`).
 - Use `SecureRandom` for tokens/nonces — never `Math.random()` or `new Random()`.
 - Store secrets in environment variables or a secrets manager — never in `application.yml` committed to VCS.
 - Use `HttpOnly` + `Secure` flags on cookies. Set `SameSite=Strict` where applicable.
 - Keep dependencies up to date — integrate OWASP Dependency-Check in CI pipeline.
-

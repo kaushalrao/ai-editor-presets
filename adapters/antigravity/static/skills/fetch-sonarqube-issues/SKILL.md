@@ -6,7 +6,6 @@ disable-model-invocation: false
 
 Retrieves open issues from a SonarQube project using the official SonarQube CLI (`sonar`). The `--format toon` output is specifically designed for AI agent consumption.
 
-
 > **Note:** The SonarQube CLI is currently in Beta.
 
 ---
@@ -27,11 +26,13 @@ If it is empty or unset, **stop and ask the user to provide their SonarQube toke
 Once the user provides the token value, **offer to run** the export command on their behalf:
 
 Unix / macOS — offer to run:
+
 ```bash
 export SONARQUBE_TOKEN=<token_provided_by_user>
 ```
 
 PowerShell — offer to run:
+
 ```powershell
 $env:SONARQUBE_TOKEN = "<token_provided_by_user>"
 ```
@@ -43,11 +44,13 @@ Also advise the user to add it to their shell profile (`~/.zshrc`, `~/.bashrc`, 
 Run `sonar --version`. If the command is not found, **offer to install it automatically** by running the platform-appropriate command:
 
 **macOS / Linux** — offer to run:
+
 ```bash
 curl -o- https://raw.githubusercontent.com/SonarSource/sonarqube-cli/refs/heads/master/user-scripts/install.sh | bash
 ```
 
 **Windows (PowerShell)** — offer to run:
+
 ```powershell
 irm https://raw.githubusercontent.com/SonarSource/sonarqube-cli/refs/heads/master/user-scripts/install.ps1 | iex
 ```
@@ -59,11 +62,13 @@ After running the install, verify with `sonar --version` and confirm success to 
 Run `sonar auth status`. If the CLI is not authenticated against sonarqube, **offer to run the login command** automatically:
 
 Unix / macOS — offer to run:
+
 ```bash
 sonar auth login -s sonarqube --with-token $SONARQUBE_TOKEN
 ```
 
 PowerShell — offer to run:
+
 ```powershell
 sonar auth login -s sonarqube --with-token $env:SONARQUBE_TOKEN
 ```
@@ -109,11 +114,13 @@ sonar list issues -p <project_key> --severity BLOCKER,HIGH,MEDIUM --format toon 
 The CLI does not support filtering by issue key. Use `curl` for this case only:
 
 Unix / macOS:
+
 ```bash
 curl -s -u "$SONARQUBE_TOKEN:" "https://sonarqube.tc.<company>.com/api/issues/search?issues=<issue_id>"
 ```
 
 PowerShell:
+
 ```powershell
 curl.exe -s -u "${env:SONARQUBE_TOKEN}:" "https://sonarqube.tc.<company>.com/api/issues/search?issues=<issue_id>"
 ```
