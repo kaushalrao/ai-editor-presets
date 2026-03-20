@@ -13,7 +13,15 @@ async function execute(repoRoot, targetDir, editorFlag, languagesFlag) {
     const availableEditors = fs.existsSync(adaptersDir) ? fs.readdirSync(adaptersDir).filter(f => !f.startsWith('.') && fs.lstatSync(path.join(adaptersDir, f)).isDirectory()) : ['cursor'];
 
     let editor = editorFlag;
-    let languages = languagesFlag ? languagesFlag.split(',').map(s => s.trim()).filter(Boolean) : null;
+    
+    let languages = null;
+    if (languagesFlag === 'all') {
+        languages = availableLanguages;
+    } else if (languagesFlag === '') {
+        languages = [];
+    } else if (typeof languagesFlag === 'string') {
+        languages = languagesFlag.split(',').map(s => s.trim()).filter(Boolean);
+    }
 
     if (!editor) {
         editor = await prompts.singleSelectPrompt("Which IDE adapter should we compile for?", availableEditors);
