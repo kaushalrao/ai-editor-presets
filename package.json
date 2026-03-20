@@ -7,7 +7,7 @@
     "ai-commons": "./bin/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./bin/cli.js --editor=cursor --language=react"
   },
   "keywords": [
     "ai",
