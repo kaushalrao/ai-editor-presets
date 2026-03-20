@@ -123,6 +123,26 @@ async function multiSelectPrompt(message, options) {
 
 const configPath = path.join(targetDir, '.ai-commons.json');
 
+function updateGitignore(projectDir) {
+    const gitignorePath = path.join(projectDir, '.gitignore');
+    const ignoreLine = '.ai-commons.json';
+    
+    try {
+        if (fs.existsSync(gitignorePath)) {
+            const content = fs.readFileSync(gitignorePath, 'utf8');
+            if (!content.includes(ignoreLine)) {
+                fs.appendFileSync(gitignorePath, `\n# AI Commons Config Tracker\n${ignoreLine}\n`);
+                console.log(`   -> 🛡️  Added .ai-commons.json to .gitignore to prevent accidental commits.`);
+            }
+        } else {
+            fs.writeFileSync(gitignorePath, `# AI Commons Config Tracker\n${ignoreLine}\n`);
+            console.log(`   -> 🛡️  Created .gitignore to prevent accidental tracking of .ai-commons.json.`);
+        }
+    } catch (e) {
+        // Fail silently if there are permission issues
+    }
+}
+
 function saveConfigAndRun(editor, languages) {
     let currentConfig = {};
     if (fs.existsSync(configPath)) {
@@ -132,6 +152,7 @@ function saveConfigAndRun(editor, languages) {
     currentConfig[editor] = languages;
     fs.writeFileSync(configPath, JSON.stringify(currentConfig, null, 2));
 
+    updateGitignore(targetDir);
     runCompiler(editor, languages);
 }
 
