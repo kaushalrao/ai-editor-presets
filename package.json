@@ -1,10 +1,10 @@
 {
-  "name": "ai-commons",
-  "version": "1.0.0",
-  "description": "Enterprise-scalable AI Commons configurations for Cursor, Copilot, & Antigravity.",
+  "name": "ai-editor-presets",
+  "version": "1.2.0",
+  "description": "AI Standards: AI Unified Rule Architecture for Cursor, Copilot, & Antigravity.",
   "main": "index.js",
   "bin": {
-    "ai-commons": "./cli/index.js"
+    "ai-editor-presets": "./cli/index.js"
   },
   "scripts": {
     "test": "node ./cli/index.js --editor=cursor --language=react",

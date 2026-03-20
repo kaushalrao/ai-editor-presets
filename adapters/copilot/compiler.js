@@ -10,7 +10,7 @@ module.exports = {
         if (!fs.existsSync(githubDir)) fs.mkdirSync(githubDir, { recursive: true });
         
         const copilotFile = path.join(githubDir, 'copilot-instructions.md');
-        let consolidatedContent = "# Copilot AI Commons Instructions\n\n";
+        let consolidatedContent = "# Copilot AI Standards Instructions\n\n";
         let report = [];
         
         const appendFiles = (categoryName, files) => {

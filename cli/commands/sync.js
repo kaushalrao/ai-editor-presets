@@ -9,7 +9,7 @@ async function execute(repoRoot, targetDir) {
         return false; // return false to signal that the caller should fall back to setup route
     }
     
-    logger.info("Found existing .ai-commons.json configuration! Updating silently...");
+    logger.info("Found existing .ai-editor-presets.json configuration! Updating silently...");
     await compilerService.syncAllConfigs(repoRoot, targetDir, config);
     return true;
 }

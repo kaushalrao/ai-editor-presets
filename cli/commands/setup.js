@@ -24,7 +24,7 @@ async function execute(repoRoot, targetDir, editorFlag, languagesFlag) {
     }
 
     if (!editor) {
-        editor = await prompts.singleSelectPrompt("Which IDE adapter should we compile for?", availableEditors);
+        editor = await prompts.singleSelectPrompt("Which AI Standards IDE adapter should we compile for?", availableEditors);
     }
 
     if (languages === null) {

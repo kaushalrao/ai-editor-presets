@@ -2,6 +2,8 @@
 
 const path = require('path');
 const logger = require('./ui/logger');
+const stateService = require('./services/state');
+const pc = require('picocolors');
 
 const repoRoot = path.join(__dirname, '..');
 const targetDir = process.cwd();
@@ -31,10 +33,13 @@ async function execute() {
 
         // Attempt a silent continuous integration sync natively if zero explicitly overriding flags are triggered
         if (command === 'init' && !editorFlag && languagesText === null) {
-            const cmdSync = require('./commands/sync');
-            const synced = await cmdSync.execute(repoRoot, targetDir);
-            // If it successfully background-synchronizes configurations, organically exit
-            if (synced) return;
+            const config = stateService.readConfig(targetDir);
+            if (config) {
+                console.log(pc.cyan(`◇  Found existing .ai-editor-presets.json configuration! Updating AI Editor Presets rules...`));
+                const cmdSync = require('./commands/sync');
+                const synced = await cmdSync.execute(repoRoot, targetDir);
+                if (synced) return;
+            }
         }
 
         // Default to initializing the robust UI setup wizard natively or explicitly overriding parameters silently

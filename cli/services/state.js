@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('../ui/logger');
 
-const CONFIG_FILE = '.ai-commons.json';
+const CONFIG_FILE = '.ai-editor-presets.json';
 
 function getConfigPath(targetDir) {
     return path.join(targetDir, CONFIG_FILE);

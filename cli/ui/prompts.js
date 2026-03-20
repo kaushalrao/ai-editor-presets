@@ -2,7 +2,7 @@ const { intro, outro, select, multiselect, isCancel } = require('@clack/prompts'
 const pc = require('picocolors');
 
 async function singleSelectPrompt(message, options) {
-    intro(pc.bgCyan(pc.black(' 🚀 AI COMMONS SETUP ')));
+    intro(pc.bgCyan(pc.black(' 🚀 AI STANDARDS SETUP ')));
     
     const mappedOptions = options.map(opt => ({ value: opt, label: opt }));
     

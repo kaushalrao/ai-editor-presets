@@ -4,8 +4,8 @@ const logger = require('../ui/logger');
 
 function updateGitignore(projectDir, config = {}) {
     const gitignorePath = path.join(projectDir, '.gitignore');
-    const BLOCK_START = '# --- AI COMMONS INJECT START ---';
-    const BLOCK_END = '# --- AI COMMONS INJECT END ---';
+    const BLOCK_START = '# --- AI STANDARDS INJECT START ---';
+    const BLOCK_END = '# --- AI STANDARDS INJECT END ---';
     
     // Dynamic mapping of Editor -> Gitignore Entry
     const EDITOR_MAP = {
@@ -14,7 +14,7 @@ function updateGitignore(projectDir, config = {}) {
         'copilot': '.github/copilot-instructions.md'
     };
 
-    let lines = ['.ai-commons.json'];
+    let lines = ['.ai-editor-presets.json'];
     Object.keys(config).forEach(editor => {
         if (EDITOR_MAP[editor]) lines.push(EDITOR_MAP[editor]);
     });
