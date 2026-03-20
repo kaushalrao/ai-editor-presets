@@ -173,8 +173,52 @@ function saveConfigAndRun(editor, languages) {
 }
 
 async function execute() {
+    const rawArgs = process.argv.slice(2);
+    const command = rawArgs.find(a => !a.startsWith('--')) || 'init';
+    const targetPayload = command !== 'init' ? rawArgs[rawArgs.indexOf(command) + 1] : null;
+
     let editor = editorArg ? editorArg.split('=')[1] : null;
     let languagesText = languageArg ? languageArg.split('=')[1] : null;
+
+    if (command === 'add' || command === 'remove') {
+        if (!targetPayload) {
+            console.error(`❌ Error: Please specify an ecosystem to ${command} (e.g. npx ai-commons ${command} python)`);
+            return process.exit(1);
+        }
+        if (!fs.existsSync(configPath)) {
+            console.error("❌ Error: No .ai-commons.json tracker found. Please run 'npx ai-commons init' first!");
+            return process.exit(1);
+        }
+        
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        let modified = false;
+
+        for (const [savedEditor, savedLanguages] of Object.entries(config)) {
+            if (command === 'add') {
+                if (!savedLanguages.includes(targetPayload)) {
+                    savedLanguages.push(targetPayload);
+                    modified = true;
+                }
+            } else if (command === 'remove') {
+                const idx = savedLanguages.indexOf(targetPayload);
+                if (idx > -1) {
+                    savedLanguages.splice(idx, 1);
+                    modified = true;
+                }
+            }
+        }
+        
+        if (modified) {
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+            console.log(`✅ Successfully ${command}ed '${targetPayload}' to your AI tracking config!`);
+            for (const [savedEditor, savedLanguages] of Object.entries(config)) {
+                runCompiler(savedEditor, savedLanguages);
+            }
+        } else {
+            console.log(`⚠️ '${targetPayload}' is already in the requested state.`);
+        }
+        return;
+    }
 
     // Auto-update if config exists and no explicit flags are passed
     if (fs.existsSync(configPath) && !editor && languagesText === null) {

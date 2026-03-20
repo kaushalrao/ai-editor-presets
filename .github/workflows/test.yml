@@ -21,6 +21,12 @@ jobs:
       with:
         node-version: '24.x'
         
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Run Markdown Linting
+      run: npm run lint
+        
     - name: Setup Testing Sandbox
       run: mkdir -p /tmp/ai-commons-test
       
