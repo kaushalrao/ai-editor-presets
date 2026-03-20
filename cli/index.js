@@ -26,16 +26,16 @@ async function execute() {
 
         // Delegate to isolated execution plugins seamlessly
         if (command === 'add') {
-            return cmdAdd.execute(repoRoot, targetDir, targetPayload);
+            return await cmdAdd.execute(repoRoot, targetDir, targetPayload);
         } 
 
         if (command === 'remove') {
-            return cmdRemove.execute(repoRoot, targetDir, targetPayload);
+            return await cmdRemove.execute(repoRoot, targetDir, targetPayload);
         }
 
         // Attempt a silent continuous integration sync natively if zero explicitly overriding flags are triggered
         if (command === 'init' && !editorFlag && languagesText === null) {
-            const synced = cmdSync.execute(repoRoot, targetDir);
+            const synced = await cmdSync.execute(repoRoot, targetDir);
             // If it successfully background-synchronizes configurations, organically exit
             if (synced) return;
         }

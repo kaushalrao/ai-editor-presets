@@ -2,7 +2,7 @@ const stateService = require('../services/state');
 const compilerService = require('../services/compiler');
 const logger = require('../ui/logger');
 
-function execute(repoRoot, targetDir, ecosystem) {
+async function execute(repoRoot, targetDir, ecosystem) {
     if (!ecosystem) {
         logger.error("Please specify an ecosystem to add (e.g. npx ai-commons add python)");
         process.exit(1);
@@ -31,7 +31,7 @@ function execute(repoRoot, targetDir, ecosystem) {
     
     if (modified) {
         logger.success(`Successfully added '${ecosystem}' to your AI tracking config!`);
-        compilerService.syncAllConfigs(repoRoot, targetDir, config);
+        await compilerService.syncAllConfigs(repoRoot, targetDir, config);
     } else {
         logger.warn(`'${ecosystem}' is already in the requested state.`);
     }

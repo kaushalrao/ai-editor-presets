@@ -1,71 +1,44 @@
-const fs = require('fs');
 const path = require('path');
-
-        let writtenFiles = [];
-
-        function copyDirRecursive(src, dest, prefix = '') {
-            if (!fs.existsSync(src)) return;
-            if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-            
-            fs.readdirSync(src).forEach(file => {
-                const srcFile = path.join(src, file);
-                if (fs.lstatSync(srcFile).isDirectory()) {
-                    copyDirRecursive(srcFile, path.join(dest, file), prefix);
-                } else {
-                    let destFileName = file;
-                    if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
-                        destFileName = `${prefix}-${file}`;
-                    }
-                    const destFile = path.join(dest, destFileName);
-                    console.log(`     📄 Copied rule: ${destFileName}`);
-                    fs.copyFileSync(srcFile, destFile);
-                    writtenFiles.push(destFile);
-                }
-            });
-        }
+const { copyRules } = require('../../cli/utils/fs-extra');
 
 module.exports = {
-    compile: function(repoRoot, targetDir, languages) {
+    name: 'cursor',
+    compile: function(ctx) {
+        const { repoRoot, targetDir } = ctx.paths;
         const cursorDir = path.join(targetDir, '.cursor');
         
-        console.log("   -> Compiling Global Core Principles...");
-        copyDirRecursive(path.join(repoRoot, '1-core-principles'), path.join(cursorDir, 'rules'));
-        
-        if (languages && languages.length > 0) {
-            languages.forEach(lang => {
-                const cleanLang = lang.trim();
-                console.log(`   -> Compiling Specific Ecosystem: [${cleanLang}]...`);
-                const langPath = path.join(repoRoot, '2-ecosystems', cleanLang);
-                
-                if (fs.existsSync(langPath)) {
-                    copyDirRecursive(langPath, path.join(cursorDir, 'rules'), cleanLang);
-                } else {
-                    console.warn(`   ⚠️  Warning: Ecosystem folder '${cleanLang}' not found in 2-ecosystems/!`);
-                }
+        let writtenFiles = [];
+        let report = [];
+
+        // Global Core
+        const coreCount = copyRules(path.join(repoRoot, '1-core-principles'), path.join(cursorDir, 'rules'), '', writtenFiles);
+        report.push({ name: 'Core Principles', count: coreCount });
+
+        // Ecosystems
+        if (ctx.languages && ctx.languages.length > 0) {
+            ctx.languages.forEach(lang => {
+                const langPath = path.join(repoRoot, '2-ecosystems', lang);
+                const count = copyRules(langPath, path.join(cursorDir, 'rules'), lang, writtenFiles);
+                if (count > 0) report.push({ name: `${lang} Ecosystem`, count });
             });
         } else {
-            console.log("   -> Compiling ALL Ecosystems (No specific language selected)...");
             const ecosystemsPath = path.join(repoRoot, '2-ecosystems');
-            if (fs.existsSync(ecosystemsPath)) {
-                fs.readdirSync(ecosystemsPath).forEach(langFolder => {
-                    if (langFolder.startsWith('.')) return;
-                    const langPath = path.join(ecosystemsPath, langFolder);
-                    if (fs.lstatSync(langPath).isDirectory()) {
-                        copyDirRecursive(langPath, path.join(cursorDir, 'rules'), langFolder);
-                    }
-                });
-            }
+            let totalEcoCount = copyRules(ecosystemsPath, path.join(cursorDir, 'rules'), '', writtenFiles);
+            report.push({ name: 'All Ecosystems', count: totalEcoCount });
         }
-        
-        console.log("   -> Injecting Prompt Macros (Slash commands)...");
-        copyDirRecursive(path.join(repoRoot, '3-prompt-macros'), path.join(cursorDir, 'commands'));
-        
-        console.log("   -> Injecting Core Agents...");
-        copyDirRecursive(path.join(repoRoot, '4-agents'), path.join(cursorDir, 'agents'));
-        
-        console.log("   -> Exporting Static Configurations (MCP/Skills)...");
-        copyDirRecursive(path.join(repoRoot, 'adapters/cursor/static'), cursorDir);
-        
-        return writtenFiles;
+
+        // Macros
+        const macroCount = copyRules(path.join(repoRoot, '3-prompt-macros'), path.join(cursorDir, 'commands'), '', writtenFiles);
+        report.push({ name: 'Prompt Macros', count: macroCount });
+
+        // Agents
+        const agentCount = copyRules(path.join(repoRoot, '4-agents'), path.join(cursorDir, 'agents'), '', writtenFiles);
+        report.push({ name: 'Core Agents', count: agentCount });
+
+        // Static
+        const staticCount = copyRules(path.join(repoRoot, 'adapters/cursor/static'), cursorDir, '', writtenFiles);
+        report.push({ name: 'IDE Configs', count: staticCount });
+
+        return { files: writtenFiles, report };
     }
 }

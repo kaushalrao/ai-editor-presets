@@ -1,71 +1,44 @@
-const fs = require('fs');
 const path = require('path');
-
-        let writtenFiles = [];
-
-        function copyDirRecursive(src, dest, prefix = '') {
-            if (!fs.existsSync(src)) return;
-            if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-            
-            fs.readdirSync(src).forEach(file => {
-                const srcFile = path.join(src, file);
-                if (fs.lstatSync(srcFile).isDirectory()) {
-                    copyDirRecursive(srcFile, path.join(dest, file), prefix);
-                } else {
-                    let destFileName = file;
-                    if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
-                        destFileName = `${prefix}-${file}`;
-                    }
-                    const destFile = path.join(dest, destFileName);
-                    console.log(`     📄 Copied rule: ${destFileName}`);
-                    fs.copyFileSync(srcFile, destFile);
-                    writtenFiles.push(destFile);
-                }
-            });
-        }
+const { copyRules } = require('../../cli/utils/fs-extra');
 
 module.exports = {
-    compile: function(repoRoot, targetDir, languages) {
-        // Antigravity leverages a global .agents folder
+    name: 'antigravity',
+    compile: function(ctx) {
+        const { repoRoot, targetDir } = ctx.paths;
         const agentDir = path.join(targetDir, '.agents');
         
-        console.log("   -> Compiling Global Core Principles for Antigravity...");
-        copyDirRecursive(path.join(repoRoot, '1-core-principles'), path.join(agentDir, 'rules'));
-        
-        if (languages && languages.length > 0) {
-            languages.forEach(lang => {
-                const cleanLang = lang.trim();
-                console.log(`   -> Compiling Specific Ecosystem: [${cleanLang}]...`);
-                const langPath = path.join(repoRoot, '2-ecosystems', cleanLang);
-                if (fs.existsSync(langPath)) {
-                    copyDirRecursive(langPath, path.join(agentDir, 'rules'), cleanLang);
-                } else {
-                    console.warn(`   ⚠️  Warning: Ecosystem folder '${cleanLang}' not found in 2-ecosystems/!`);
-                }
+        let writtenFiles = [];
+        let report = [];
+
+        // Global Core
+        const coreCount = copyRules(path.join(repoRoot, '1-core-principles'), path.join(agentDir, 'rules'), '', writtenFiles);
+        report.push({ name: 'Core Principles', count: coreCount });
+
+        // Ecosystems
+        if (ctx.languages && ctx.languages.length > 0) {
+            ctx.languages.forEach(lang => {
+                const langPath = path.join(repoRoot, '2-ecosystems', lang);
+                const count = copyRules(langPath, path.join(agentDir, 'rules'), lang, writtenFiles);
+                if (count > 0) report.push({ name: `${lang} Ecosystem`, count });
             });
         } else {
-            console.log("   -> Compiling ALL Ecosystems...");
             const ecosystemsPath = path.join(repoRoot, '2-ecosystems');
-            if (fs.existsSync(ecosystemsPath)) {
-                fs.readdirSync(ecosystemsPath).forEach(langFolder => {
-                    if (langFolder.startsWith('.')) return;
-                    const langPath = path.join(ecosystemsPath, langFolder);
-                    if (fs.lstatSync(langPath).isDirectory()) {
-                        copyDirRecursive(langPath, path.join(agentDir, 'rules'), langFolder);
-                    }
-                });
-            }
+            let totalEcoCount = copyRules(ecosystemsPath, path.join(agentDir, 'rules'), '', writtenFiles);
+            report.push({ name: 'All Ecosystems', count: totalEcoCount });
         }
-        
-        console.log("   -> Injecting Prompt Macros as Antigravity Workflows...");
-        copyDirRecursive(path.join(repoRoot, '3-prompt-macros'), path.join(agentDir, 'workflows'));
-        
-        console.log("   -> Exporting Core AI Personas...");
-        copyDirRecursive(path.join(repoRoot, '4-agents'), path.join(agentDir, 'personas'));
-        
-        console.log("   -> Exporting Static Configurations & Skills...");
-        copyDirRecursive(path.join(repoRoot, 'adapters/antigravity/static'), agentDir);
 
-        return writtenFiles;
+        // Workflows
+        const workflowCount = copyRules(path.join(repoRoot, '3-prompt-macros'), path.join(agentDir, 'workflows'), '', writtenFiles);
+        report.push({ name: 'Workflows', count: workflowCount });
+
+        // Personas
+        const personaCount = copyRules(path.join(repoRoot, '4-agents'), path.join(agentDir, 'personas'), '', writtenFiles);
+        report.push({ name: 'AI Personas', count: personaCount });
+
+        // Static
+        const staticCount = copyRules(path.join(repoRoot, 'adapters/antigravity/static'), agentDir, '', writtenFiles);
+        report.push({ name: 'Static Configs', count: staticCount });
+
+        return { files: writtenFiles, report };
     }
 }
