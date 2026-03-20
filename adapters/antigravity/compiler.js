@@ -44,6 +44,9 @@ module.exports = {
         console.log("   -> Injecting Prompt Macros as Antigravity Workflows...");
         copyDirRecursive(path.join(repoRoot, '3-prompt-macros'), path.join(agentDir, 'workflows'));
         
+        console.log("   -> Exporting Core AI Personas...");
+        copyDirRecursive(path.join(repoRoot, '4-agents'), path.join(agentDir, 'personas'));
+        
         console.log("   -> Exporting Static Configurations & Skills...");
         copyDirRecursive(path.join(repoRoot, 'adapters/antigravity/static'), agentDir);
     }
