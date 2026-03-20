@@ -1,25 +1,28 @@
 const fs = require('fs');
 const path = require('path');
 
-function copyDirRecursive(src, dest, prefix = '') {
-    if (!fs.existsSync(src)) return;
-    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-    
-    fs.readdirSync(src).forEach(file => {
-        const srcFile = path.join(src, file);
-        if (fs.lstatSync(srcFile).isDirectory()) {
-            copyDirRecursive(srcFile, path.join(dest, file), prefix);
-        } else {
-            let destFileName = file;
-            if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
-                destFileName = `${prefix}-${file}`;
-            }
-            const destFile = path.join(dest, destFileName);
-            console.log(`     📄 Copied rule: ${destFileName}`);
-            fs.copyFileSync(srcFile, destFile);
+        let writtenFiles = [];
+
+        function copyDirRecursive(src, dest, prefix = '') {
+            if (!fs.existsSync(src)) return;
+            if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+            
+            fs.readdirSync(src).forEach(file => {
+                const srcFile = path.join(src, file);
+                if (fs.lstatSync(srcFile).isDirectory()) {
+                    copyDirRecursive(srcFile, path.join(dest, file), prefix);
+                } else {
+                    let destFileName = file;
+                    if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
+                        destFileName = `${prefix}-${file}`;
+                    }
+                    const destFile = path.join(dest, destFileName);
+                    console.log(`     📄 Copied rule: ${destFileName}`);
+                    fs.copyFileSync(srcFile, destFile);
+                    writtenFiles.push(destFile);
+                }
+            });
         }
-    });
-}
 
 module.exports = {
     compile: function(repoRoot, targetDir, languages) {
@@ -62,5 +65,7 @@ module.exports = {
         
         console.log("   -> Exporting Static Configurations & Skills...");
         copyDirRecursive(path.join(repoRoot, 'adapters/antigravity/static'), agentDir);
+
+        return writtenFiles;
     }
 }

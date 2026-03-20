@@ -28,8 +28,9 @@ function runCompiler(editor, languages) {
     console.log(`\n⚙️  Syncing rules for [${editor.toUpperCase()}] into -> ${targetDir}\n`);
 
     try {
-        adapter.compile(repoRoot, targetDir, languages);
+        const generatedFiles = adapter.compile(repoRoot, targetDir, languages);
         console.log(`\n✅ AI Commons rules synced successfully for ${editor}!`);
+        return generatedFiles || [];
     } catch (e) {
         console.error(`\n❌ Error during sync:`, e.stack || e.message);
         process.exit(1);
@@ -159,17 +160,35 @@ function updateGitignore(projectDir) {
     }
 }
 
+function syncAllConfigs(config) {
+    const oldManagedFiles = config.managedFiles || [];
+    
+    // Purge old mapped files structurally
+    oldManagedFiles.forEach(f => {
+        if (fs.existsSync(f)) {
+            try { fs.unlinkSync(f); } catch (e) {}
+        }
+    });
+
+    let newManagedFiles = [];
+    for (const [editor, languages] of Object.entries(config)) {
+        if (editor === 'managedFiles') continue;
+        const result = runCompiler(editor, languages);
+        if (Array.isArray(result)) newManagedFiles.push(...result);
+    }
+
+    config.managedFiles = newManagedFiles;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    updateGitignore(targetDir);
+}
+
 function saveConfigAndRun(editor, languages) {
     let currentConfig = {};
     if (fs.existsSync(configPath)) {
         try { Object.assign(currentConfig, JSON.parse(fs.readFileSync(configPath, 'utf8'))); } catch (e) { }
     }
-
     currentConfig[editor] = languages;
-    fs.writeFileSync(configPath, JSON.stringify(currentConfig, null, 2));
-
-    updateGitignore(targetDir);
-    runCompiler(editor, languages);
+    syncAllConfigs(currentConfig);
 }
 
 async function execute() {
@@ -209,11 +228,8 @@ async function execute() {
         }
         
         if (modified) {
-            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
             console.log(`✅ Successfully ${command}ed '${targetPayload}' to your AI tracking config!`);
-            for (const [savedEditor, savedLanguages] of Object.entries(config)) {
-                runCompiler(savedEditor, savedLanguages);
-            }
+            syncAllConfigs(config);
         } else {
             console.log(`⚠️ '${targetPayload}' is already in the requested state.`);
         }
@@ -225,15 +241,7 @@ async function execute() {
         console.log("📂 Found existing .ai-commons.json configuration! Updating silently...");
         try {
             const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-            if (config.editor) {
-                // Handle legacy format gracefully
-                runCompiler(config.editor, config.languages);
-            } else {
-                // Handle the new dictionary mapping to seamlessly auto-update all installed IDE rules at once!
-                for (const [savedEditor, savedLanguages] of Object.entries(config)) {
-                    runCompiler(savedEditor, savedLanguages);
-                }
-            }
+            syncAllConfigs(config);
             return;
         } catch (e) {
             console.log("⚠️  Could not read existing config. Defaulting to setup wizard.");

@@ -74,5 +74,7 @@ module.exports = {
         
         fs.writeFileSync(copilotFile, consolidatedContent);
         console.log(`\n   ✅ Successfully generated ${copilotFile}`);
+        
+        return [copilotFile];
     }
 }
