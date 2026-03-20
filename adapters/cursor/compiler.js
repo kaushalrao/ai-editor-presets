@@ -1,17 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-function copyDirRecursive(src, dest) {
+function copyDirRecursive(src, dest, prefix = '') {
     if (!fs.existsSync(src)) return;
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
     
     fs.readdirSync(src).forEach(file => {
         const srcFile = path.join(src, file);
-        const destFile = path.join(dest, file);
         if (fs.lstatSync(srcFile).isDirectory()) {
-            copyDirRecursive(srcFile, destFile);
+            copyDirRecursive(srcFile, path.join(dest, file), prefix);
         } else {
-            console.log(`     📄 Copied rule: ${file}`);
+            const destFileName = prefix ? `${prefix}-${file}` : file;
+            const destFile = path.join(dest, destFileName);
+            console.log(`     📄 Copied rule: ${destFileName}`);
             fs.copyFileSync(srcFile, destFile);
         }
     });
@@ -31,15 +32,23 @@ module.exports = {
                 const langPath = path.join(repoRoot, '2-ecosystems', cleanLang);
                 
                 if (fs.existsSync(langPath)) {
-                    copyDirRecursive(langPath, path.join(cursorDir, 'rules'));
+                    copyDirRecursive(langPath, path.join(cursorDir, 'rules'), cleanLang);
                 } else {
                     console.warn(`   ⚠️  Warning: Ecosystem folder '${cleanLang}' not found in 2-ecosystems/!`);
                 }
             });
         } else {
             console.log("   -> Compiling ALL Ecosystems (No specific language selected)...");
-            // Copies all nested framework/language rules directly in
-            copyDirRecursive(path.join(repoRoot, '2-ecosystems'), path.join(cursorDir, 'rules'));
+            const ecosystemsPath = path.join(repoRoot, '2-ecosystems');
+            if (fs.existsSync(ecosystemsPath)) {
+                fs.readdirSync(ecosystemsPath).forEach(langFolder => {
+                    if (langFolder.startsWith('.')) return;
+                    const langPath = path.join(ecosystemsPath, langFolder);
+                    if (fs.lstatSync(langPath).isDirectory()) {
+                        copyDirRecursive(langPath, path.join(cursorDir, 'rules'), langFolder);
+                    }
+                });
+            }
         }
         
         console.log("   -> Injecting Prompt Macros (Slash commands)...");
