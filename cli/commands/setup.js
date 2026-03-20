@@ -37,7 +37,7 @@ async function execute(repoRoot, targetDir, editorFlag, languagesFlag) {
 
     // Persist explicitly and sync
     stateService.writeConfig(targetDir, currentConfig);
-    gitService.updateGitignore(targetDir);
+    gitService.updateGitignore(targetDir, currentConfig);
     await compilerService.syncAllConfigs(repoRoot, targetDir, currentConfig);
 }
 

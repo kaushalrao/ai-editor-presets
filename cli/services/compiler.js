@@ -67,7 +67,7 @@ async function syncAllConfigs(repoRoot, targetDir, currentConfig) {
 
     currentConfig.managedFiles = newManagedFiles;
     stateService.writeConfig(targetDir, currentConfig);
-    gitService.updateGitignore(targetDir);
+    gitService.updateGitignore(targetDir, currentConfig);
 }
 
 module.exports = { syncAllConfigs };
