@@ -10,7 +10,10 @@ function copyDirRecursive(src, dest, prefix = '') {
         if (fs.lstatSync(srcFile).isDirectory()) {
             copyDirRecursive(srcFile, path.join(dest, file), prefix);
         } else {
-            const destFileName = prefix ? `${prefix}-${file}` : file;
+            let destFileName = file;
+            if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
+                destFileName = `${prefix}-${file}`;
+            }
             const destFile = path.join(dest, destFileName);
             console.log(`     📄 Copied rule: ${destFileName}`);
             fs.copyFileSync(srcFile, destFile);
