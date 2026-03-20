@@ -4,10 +4,10 @@
   "description": "Enterprise-scalable AI Commons configurations for Cursor, Copilot, & Antigravity.",
   "main": "index.js",
   "bin": {
-    "ai-commons": "./bin/cli.js"
+    "ai-commons": "./cli/index.js"
   },
   "scripts": {
-    "test": "node ./bin/cli.js --editor=cursor --language=react",
+    "test": "node ./cli/index.js --editor=cursor --language=react",
     "lint": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules",
     "prepare": "husky",
     "lint:fix": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix",
@@ -28,5 +28,9 @@
     "husky": "^9.1.7",
     "markdownlint-cli": "^0.48.0",
     "standard-version": "^9.5.0"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.1.0",
+    "picocolors": "^1.1.1"
   }
 }
