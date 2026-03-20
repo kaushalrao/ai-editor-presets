@@ -8,6 +8,12 @@ function execute(repoRoot, targetDir, ecosystem) {
         process.exit(1);
     }
     
+    // Security verification protecting strictly against Directory Traversal exploitation natively
+    if (!/^[a-zA-Z0-9_-]+$/.test(ecosystem)) {
+        logger.error(`Security Block: Invalid ecosystem name '${ecosystem}'. Path traversal vectors are formally rejected.`);
+        process.exit(1);
+    }
+    
     const config = stateService.readConfig(targetDir);
     if (!config) {
         logger.error(`No ${stateService.CONFIG_FILE} tracker found. Please run 'npx ai-commons init' first!`);

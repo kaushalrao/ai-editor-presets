@@ -4,37 +4,21 @@ const logger = require('../ui/logger');
 
 function updateGitignore(projectDir) {
     const gitignorePath = path.join(projectDir, '.gitignore');
-    const ignoreLines = [
-        '.ai-commons.json',
-        '.cursor/',
-        '.agents/',
-        '.github/copilot-instructions.md'
-    ];
+    const BLOCK_START = '# --- AI COMMONS INJECT START ---';
+    const BLOCK_END = '# --- AI COMMONS INJECT END ---';
+    const blockContent = `\n${BLOCK_START}\n.ai-commons.json\n.cursor/\n.agents/\n.github/copilot-instructions.md\n${BLOCK_END}\n`;
     
     try {
-        let content = '';
-        if (fs.existsSync(gitignorePath)) {
-            content = fs.readFileSync(gitignorePath, 'utf8');
-        } else {
-            logger.step(`🛡️  Created .gitignore to prevent accidental tracking of AI Configuration files.`);
-        }
-        
-        let appendContent = '\n# AI Commons Config Tracker\n';
-        let added = false;
-        
-        for (const line of ignoreLines) {
-            if (!content.includes(line)) {
-                appendContent += `${line}\n`;
-                added = true;
-            }
-        }
-        
-        if (added) {
-            fs.appendFileSync(gitignorePath, appendContent);
+        let content = fs.existsSync(gitignorePath) ? fs.readFileSync(gitignorePath, 'utf8') : '';
+
+        // Safely enforce idempotency strictly via AI-specific wrapping block bounds naturally bypassing false comment collision limits
+        if (!content.includes(BLOCK_START)) {
+            if (content && !content.endsWith('\n')) content += '\n';
+            fs.writeFileSync(gitignorePath, content + blockContent);
             logger.step(`🛡️  Added AI configurations to .gitignore to prevent accidental commits.`);
         }
     } catch (e) {
-        // Fail silently if there are permission issues
+        // Fail silently if there are permission issues natively
     }
 }
 

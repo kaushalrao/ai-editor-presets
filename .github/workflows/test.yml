@@ -33,7 +33,7 @@ jobs:
     - name: Test Cursor Compilation (Specific Ecosystems)
       run: |
         cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/bin/cli.js --editor=cursor --language=react,python
+        node $GITHUB_WORKSPACE/cli/index.js --editor=cursor --language=react,python
         
         # Verify that files were deployed correctly
         if [ ! -d "/tmp/ai-commons-test/.cursor/rules" ]; then exit 1; fi
@@ -41,7 +41,7 @@ jobs:
     - name: Test Antigravity Compilation (All Ecosystems natively)
       run: |
         cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/bin/cli.js --editor=antigravity --language=""
+        node $GITHUB_WORKSPACE/cli/index.js --editor=antigravity --language=""
         
         # Verify that files were deployed correctly
         if [ ! -d "/tmp/ai-commons-test/.agents/personas" ]; then exit 1; fi
@@ -49,7 +49,7 @@ jobs:
     - name: Test Copilot Compilation (Flat Concatenation)
       run: |
         cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/bin/cli.js --editor=copilot --language=react
+        node $GITHUB_WORKSPACE/cli/index.js --editor=copilot --language=react
         
         # Verify that the flat concatenation file was strictly generated
         if [ ! -f "/tmp/ai-commons-test/.github/copilot-instructions.md" ]; then exit 1; fi
