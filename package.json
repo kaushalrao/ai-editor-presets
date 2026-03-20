@@ -10,7 +10,11 @@
     "test": "node ./bin/cli.js --editor=cursor --language=react",
     "lint": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules",
     "prepare": "husky",
-    "lint:fix": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix"
+    "lint:fix": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix",
+    "release": "standard-version"
+  },
+  "standard-version": {
+    "infile": "RELEASE.md"
   },
   "keywords": [
     "ai",
@@ -22,6 +26,7 @@
   "license": "ISC",
   "devDependencies": {
     "husky": "^9.1.7",
-    "markdownlint-cli": "^0.48.0"
+    "markdownlint-cli": "^0.48.0",
+    "standard-version": "^9.5.0"
   }
 }
