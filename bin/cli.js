@@ -125,18 +125,34 @@ const configPath = path.join(targetDir, '.ai-commons.json');
 
 function updateGitignore(projectDir) {
     const gitignorePath = path.join(projectDir, '.gitignore');
-    const ignoreLine = '.ai-commons.json';
+    const ignoreLines = [
+        '.ai-commons.json',
+        '.cursor/',
+        '.agents/',
+        '.github/copilot-instructions.md'
+    ];
     
     try {
+        let content = '';
         if (fs.existsSync(gitignorePath)) {
-            const content = fs.readFileSync(gitignorePath, 'utf8');
-            if (!content.includes(ignoreLine)) {
-                fs.appendFileSync(gitignorePath, `\n# AI Commons Config Tracker\n${ignoreLine}\n`);
-                console.log(`   -> 🛡️  Added .ai-commons.json to .gitignore to prevent accidental commits.`);
-            }
+            content = fs.readFileSync(gitignorePath, 'utf8');
         } else {
-            fs.writeFileSync(gitignorePath, `# AI Commons Config Tracker\n${ignoreLine}\n`);
-            console.log(`   -> 🛡️  Created .gitignore to prevent accidental tracking of .ai-commons.json.`);
+            console.log(`   -> 🛡️  Created .gitignore to prevent accidental tracking of AI Configuration files.`);
+        }
+        
+        let appendContent = '\n# AI Commons Config Tracker\n';
+        let added = false;
+        
+        for (const line of ignoreLines) {
+            if (!content.includes(line)) {
+                appendContent += `${line}\n`;
+                added = true;
+            }
+        }
+        
+        if (added) {
+            fs.appendFileSync(gitignorePath, appendContent);
+            console.log(`   -> 🛡️  Added AI configurations to .gitignore to prevent accidental commits.`);
         }
     } catch (e) {
         // Fail silently if there are permission issues
