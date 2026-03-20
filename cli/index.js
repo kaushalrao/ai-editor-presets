@@ -3,12 +3,6 @@
 const path = require('path');
 const logger = require('./ui/logger');
 
-// Commands
-const cmdAdd = require('./commands/add');
-const cmdRemove = require('./commands/remove');
-const cmdSync = require('./commands/sync');
-const cmdSetup = require('./commands/setup');
-
 const repoRoot = path.join(__dirname, '..');
 const targetDir = process.cwd();
 
@@ -24,23 +18,27 @@ async function execute() {
         let editorFlag = editorArg ? editorArg.split('=')[1] : null;
         let languagesText = languageArg ? languageArg.split('=')[1] : null;
 
-        // Delegate to isolated execution plugins seamlessly
+        // Lazy load the appropriate command on-demand to minimize startup latency natively
         if (command === 'add') {
+            const cmdAdd = require('./commands/add');
             return await cmdAdd.execute(repoRoot, targetDir, targetPayload);
         } 
 
         if (command === 'remove') {
+            const cmdRemove = require('./commands/remove');
             return await cmdRemove.execute(repoRoot, targetDir, targetPayload);
         }
 
         // Attempt a silent continuous integration sync natively if zero explicitly overriding flags are triggered
         if (command === 'init' && !editorFlag && languagesText === null) {
+            const cmdSync = require('./commands/sync');
             const synced = await cmdSync.execute(repoRoot, targetDir);
             // If it successfully background-synchronizes configurations, organically exit
             if (synced) return;
         }
 
         // Default to initializing the robust UI setup wizard natively or explicitly overriding parameters silently
+        const cmdSetup = require('./commands/setup');
         await cmdSetup.execute(repoRoot, targetDir, editorFlag, languagesText);
     } catch (err) {
         logger.error(`Critical Execution Failure: ${err.message}`);
