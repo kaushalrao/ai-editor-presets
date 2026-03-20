@@ -47,9 +47,22 @@ module.exports = {
 
         // Agents
         const agentCount = appendFiles('Agent Personas', collectRules(path.join(repoRoot, '4-agents')));
-        report.push({ name: 'Agent Personas', count: agentCount });
+        
+        let writeStat = { created: 0, updated: 0, skipped: 0 };
+        if (fs.existsSync(copilotFile)) {
+            const existingContent = fs.readFileSync(copilotFile, 'utf8');
+            if (existingContent === consolidatedContent) {
+                writeStat.skipped = 1;
+            } else {
+                fs.writeFileSync(copilotFile, consolidatedContent);
+                writeStat.updated = 1;
+            }
+        } else {
+            fs.writeFileSync(copilotFile, consolidatedContent);
+            writeStat.created = 1;
+        }
 
-        fs.writeFileSync(copilotFile, consolidatedContent);
+        report.push({ name: 'Consolidated Loader', stats: writeStat });
         
         return { files: [copilotFile], report };
     }

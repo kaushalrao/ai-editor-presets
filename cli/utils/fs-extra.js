@@ -6,26 +6,42 @@ const path = require('path');
  * Used by all IDE adapters for synchronized rule generation.
  */
 function copyRules(src, dest, prefix = '', ledger = []) {
-    if (!fs.existsSync(src)) return 0;
+    if (!fs.existsSync(src)) return { created: 0, updated: 0, skipped: 0 };
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
     
-    let count = 0;
+    let stats = { created: 0, updated: 0, skipped: 0 };
+
     fs.readdirSync(src).forEach(file => {
         const srcFile = path.join(src, file);
         if (fs.lstatSync(srcFile).isDirectory()) {
-            count += copyRules(srcFile, path.join(dest, file), prefix, ledger);
+            const res = copyRules(srcFile, path.join(dest, file), prefix, ledger);
+            stats.created += res.created;
+            stats.updated += res.updated;
+            stats.skipped += res.skipped;
         } else {
             let destFileName = file;
             if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
                 destFileName = `${prefix}-${file}`;
             }
             const destFile = path.join(dest, destFileName);
-            fs.copyFileSync(srcFile, destFile);
             ledger.push(destFile);
-            count++;
+
+            if (fs.existsSync(destFile)) {
+                const srcContent = fs.readFileSync(srcFile, 'utf8');
+                const destContent = fs.readFileSync(destFile, 'utf8');
+                if (srcContent === destContent) {
+                    stats.skipped++;
+                } else {
+                    fs.writeFileSync(destFile, srcContent);
+                    stats.updated++;
+                }
+            } else {
+                fs.copyFileSync(srcFile, destFile);
+                stats.created++;
+            }
         }
     });
-    return count;
+    return stats;
 }
 
 /**

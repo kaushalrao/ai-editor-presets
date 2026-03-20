@@ -21,13 +21,18 @@ async function runAdapter(repoRoot, targetDir, adapterName, adapterModule, langu
         const adapter = adapterModule.load();
         const { files, report } = await Promise.resolve(adapter.compile(ctx));
         
-        s.stop(pc.green(`Successfully synchronized ${adapterName.toUpperCase()}!`));
+        s.stop(pc.green(`Successfully processed ${adapterName.toUpperCase()}!`));
 
         if (report && report.length > 0) {
             report.forEach((section, i) => {
                 const prefix = i === report.length - 1 ? '└─' : '├─';
-                const fileLabel = section.count === 1 ? 'file' : 'files';
-                console.log(pc.dim(`  ${prefix} `) + pc.white(`${section.name}: `) + pc.cyan(`${section.count} ${fileLabel}`));
+                let labelParts = [];
+                if (section.stats.created > 0) labelParts.push(pc.green(`+${section.stats.created} new`));
+                if (section.stats.updated > 0) labelParts.push(pc.yellow(`~${section.stats.updated} updated`));
+                if (section.stats.skipped > 0) labelParts.push(pc.dim(`• ${section.stats.skipped} pinned`));
+                
+                const statsLine = labelParts.length > 0 ? labelParts.join(pc.dim(' | ')) : pc.dim('no changes');
+                console.log(pc.dim(`  ${prefix} `) + pc.white(`${section.name}: `) + statsLine);
             });
             console.log('');
         }
@@ -35,7 +40,7 @@ async function runAdapter(repoRoot, targetDir, adapterName, adapterModule, langu
     } catch (e) {
         s.stop(pc.red(`Sync failed for ${adapterName}`));
         logger.error(`${adapterName} Error: ${e.message}`);
-        return []; // Partial failure: don't kill other adapters
+        return [];
     }
 }
 
@@ -43,13 +48,6 @@ async function syncAllConfigs(repoRoot, targetDir, currentConfig) {
     const oldManagedFiles = currentConfig.managedFiles || [];
     const registry = discoverAdapters(repoRoot);
     
-    // Purge old files
-    oldManagedFiles.forEach(f => {
-        if (fs.existsSync(f)) {
-            try { fs.unlinkSync(f); } catch (e) {}
-        }
-    });
-
     const syncTasks = [];
     for (const [editor, languages] of Object.entries(currentConfig)) {
         if (editor === 'managedFiles' || !registry[editor]) continue;
@@ -58,6 +56,14 @@ async function syncAllConfigs(repoRoot, targetDir, currentConfig) {
 
     const results = await Promise.all(syncTasks);
     const newManagedFiles = results.flat();
+
+    // Surgical Orphan Cleanup: Only delete files that were tracked but didn't reappear in this sync
+    const managedSet = new Set(newManagedFiles);
+    oldManagedFiles.forEach(f => {
+        if (!managedSet.has(f) && fs.existsSync(f)) {
+            try { fs.unlinkSync(f); } catch (e) {}
+        }
+    });
 
     currentConfig.managedFiles = newManagedFiles;
     stateService.writeConfig(targetDir, currentConfig);

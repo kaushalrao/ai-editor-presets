@@ -11,33 +11,35 @@ module.exports = {
         let report = [];
 
         // Global Core
-        const coreCount = copyRules(path.join(repoRoot, '1-core-principles'), path.join(agentDir, 'rules'), '', writtenFiles);
-        report.push({ name: 'Core Principles', count: coreCount });
+        const coreStats = copyRules(path.join(repoRoot, '1-core-principles'), path.join(agentDir, 'rules'), '', writtenFiles);
+        report.push({ name: 'Core Principles', stats: coreStats });
 
         // Ecosystems
         if (ctx.languages && ctx.languages.length > 0) {
             ctx.languages.forEach(lang => {
                 const langPath = path.join(repoRoot, '2-ecosystems', lang);
-                const count = copyRules(langPath, path.join(agentDir, 'rules'), lang, writtenFiles);
-                if (count > 0) report.push({ name: `${lang} Ecosystem`, count });
+                const stats = copyRules(langPath, path.join(agentDir, 'rules'), lang, writtenFiles);
+                if (stats.created + stats.updated + stats.skipped > 0) {
+                    report.push({ name: `${lang} Ecosystem`, stats });
+                }
             });
         } else {
             const ecosystemsPath = path.join(repoRoot, '2-ecosystems');
-            let totalEcoCount = copyRules(ecosystemsPath, path.join(agentDir, 'rules'), '', writtenFiles);
-            report.push({ name: 'All Ecosystems', count: totalEcoCount });
+            const totalEcoStats = copyRules(ecosystemsPath, path.join(agentDir, 'rules'), '', writtenFiles);
+            report.push({ name: 'All Ecosystems', stats: totalEcoStats });
         }
 
         // Workflows
-        const workflowCount = copyRules(path.join(repoRoot, '3-prompt-macros'), path.join(agentDir, 'workflows'), '', writtenFiles);
-        report.push({ name: 'Workflows', count: workflowCount });
+        const workflowStats = copyRules(path.join(repoRoot, '3-prompt-macros'), path.join(agentDir, 'workflows'), '', writtenFiles);
+        report.push({ name: 'Workflows', stats: workflowStats });
 
         // Personas
-        const personaCount = copyRules(path.join(repoRoot, '4-agents'), path.join(agentDir, 'personas'), '', writtenFiles);
-        report.push({ name: 'AI Personas', count: personaCount });
+        const personaStats = copyRules(path.join(repoRoot, '4-agents'), path.join(agentDir, 'personas'), '', writtenFiles);
+        report.push({ name: 'AI Personas', stats: personaStats });
 
         // Static
-        const staticCount = copyRules(path.join(repoRoot, 'adapters/antigravity/static'), agentDir, '', writtenFiles);
-        report.push({ name: 'Static Configs', count: staticCount });
+        const staticStats = copyRules(path.join(repoRoot, 'adapters/antigravity/static'), agentDir, '', writtenFiles);
+        report.push({ name: 'Static Configs', stats: staticStats });
 
         return { files: writtenFiles, report };
     }
