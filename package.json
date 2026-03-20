@@ -1,0 +1,20 @@
+{
+  "name": "ai-commons",
+  "version": "1.0.0",
+  "description": "Enterprise-scalable AI Commons configurations for Cursor, Copilot, & Antigravity.",
+  "main": "index.js",
+  "bin": {
+    "ai-commons": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "cursor",
+    "copilot",
+    "guidelines"
+  ],
+  "author": "",
+  "license": "ISC"
+}
