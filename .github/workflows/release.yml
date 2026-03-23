@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
 
 jobs:
   release:
-    if: "!contains(github.event.head_commit.message, 'chore(release)')"
+    if: "!contains(github.event.head_commit.message, 'chore(release)') && !contains(github.event.head_commit.message, '[skip release]')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -50,10 +51,13 @@ jobs:
         run: |
           git add RELEASE.md package.json package-lock.json
           git commit --amend --no-edit || echo "No metadata changes to amend"
-          git push -f --follow-tags origin main
           # Extract version to use as tag
           VERSION=$(node -p "require('./package.json').version")
-          echo "tag_name=v$VERSION" >> $GITHUB_OUTPUT
+          TAG_NAME="v$VERSION"
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          # Force update the tag to the amended commit
+          git tag -f "$TAG_NAME"
+          git push -f --follow-tags origin main
 
       - name: Publish Official GitHub UI Release
         uses: softprops/action-gh-release@v2
