@@ -7,9 +7,37 @@ const path = require('path');
  */
 function copyRules(src, dest, prefix = '', ledger = []) {
     if (!fs.existsSync(src)) return { created: 0, updated: 0, skipped: 0 };
-    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
     
     let stats = { created: 0, updated: 0, skipped: 0 };
+    const srcStat = fs.lstatSync(src);
+
+    if (srcStat.isFile()) {
+        if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+        const fileName = path.basename(src);
+        let destFileName = fileName;
+        if (prefix && !fileName.toLowerCase().startsWith(prefix.toLowerCase())) {
+            destFileName = `${prefix}-${fileName}`;
+        }
+        const destFile = path.join(dest, destFileName);
+        ledger.push(destFile);
+
+        const srcContent = fs.readFileSync(src, 'utf8');
+        if (fs.existsSync(destFile)) {
+            const destContent = fs.readFileSync(destFile, 'utf8');
+            if (srcContent === destContent) {
+                stats.skipped++;
+            } else {
+                fs.writeFileSync(destFile, srcContent);
+                stats.updated++;
+            }
+        } else {
+            fs.writeFileSync(destFile, srcContent);
+            stats.created++;
+        }
+        return stats;
+    }
+
+    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
 
     fs.readdirSync(src).forEach(file => {
         const srcFile = path.join(src, file);
