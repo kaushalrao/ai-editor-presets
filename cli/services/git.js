@@ -1,42 +1,34 @@
 const fs = require('fs');
 const path = require('path');
-const logger = require('../ui/logger');
+
+const BLOCK_START = '# --- AI STANDARDS INJECT START ---';
+const BLOCK_END = '# --- AI STANDARDS INJECT END ---';
+
+const EDITOR_MAP = {
+    'cursor': '.cursor/',
+    'antigravity': '.agents/',
+    'copilot': '.github/copilot-instructions.md'
+};
 
 function updateGitignore(projectDir, config = {}) {
     const gitignorePath = path.join(projectDir, '.gitignore');
-    const BLOCK_START = '# --- AI STANDARDS INJECT START ---';
-    const BLOCK_END = '# --- AI STANDARDS INJECT END ---';
     
-    // Dynamic mapping of Editor -> Gitignore Entry
-    const EDITOR_MAP = {
-        'cursor': '.cursor/',
-        'antigravity': '.agents/',
-        'copilot': '.github/copilot-instructions.md'
-    };
-
-    let lines = ['.ai-editor-presets.json'];
-    Object.keys(config).forEach(editor => {
-        if (EDITOR_MAP[editor]) lines.push(EDITOR_MAP[editor]);
-    });
-
+    const lines = ['.ai-editor-presets.json', ...Object.keys(config).map(e => EDITOR_MAP[e]).filter(Boolean)];
     const blockContent = `${BLOCK_START}\n${[...new Set(lines)].join('\n')}\n${BLOCK_END}`;
     
     try {
         let content = fs.existsSync(gitignorePath) ? fs.readFileSync(gitignorePath, 'utf8') : '';
 
-        // If block exists, replace it for surgical updates natively
         if (content.includes(BLOCK_START) && content.includes(BLOCK_END)) {
             const re = new RegExp(`${BLOCK_START}[\\s\\S]*?${BLOCK_END}`, 'g');
             content = content.replace(re, blockContent);
         } else {
-            // Otherwise append it fresh
-            if (content && !content.endsWith('\n')) content += '\n';
-            content += `\n${blockContent}\n`;
+            content += (content && !content.endsWith('\n') ? '\n' : '') + `\n${blockContent}\n`;
         }
         
         fs.writeFileSync(gitignorePath, content);
     } catch (e) {
-        // Fail silently if there are permission issues natively
+        // Silent fail on permission issues
     }
 }
 

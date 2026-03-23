@@ -1,32 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Dynamically discovers all valid IDE adapters inside the adapters/ directory.
- */
 function discoverAdapters(repoRoot) {
     const adaptersDir = path.join(repoRoot, 'adapters');
-    const registry = {};
+    if (!fs.existsSync(adaptersDir)) return {};
 
-    if (!fs.existsSync(adaptersDir)) return registry;
-
-    const directories = fs.readdirSync(adaptersDir).filter(f => {
-        const fullPath = path.join(adaptersDir, f);
-        return !f.startsWith('.') && fs.lstatSync(fullPath).isDirectory();
-    });
-
-    directories.forEach(dir => {
-        const compilerPath = path.join(adaptersDir, dir, 'compiler.js');
-        if (fs.existsSync(compilerPath)) {
-            // Lazy load the adapter into the dictionary
-            registry[dir] = {
-                path: compilerPath,
-                load: () => require(compilerPath)
-            };
-        }
-    });
-
-    return registry;
+    return fs.readdirSync(adaptersDir)
+        .filter(f => !f.startsWith('.') && fs.lstatSync(path.join(adaptersDir, f)).isDirectory())
+        .reduce((acc, dir) => {
+            const compilerPath = path.join(adaptersDir, dir, 'compiler.js');
+            if (fs.existsSync(compilerPath)) {
+                acc[dir] = {
+                    path: compilerPath,
+                    load: () => require(compilerPath)
+                };
+            }
+            return acc;
+        }, {});
 }
 
 module.exports = { discoverAdapters };

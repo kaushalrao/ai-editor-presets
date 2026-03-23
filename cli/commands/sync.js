@@ -5,11 +5,10 @@ const logger = require('../ui/logger');
 async function execute(repoRoot, targetDir) {
     const config = stateService.readConfig(targetDir);
     if (!config) {
-        logger.warn("Could not read existing config. Defaulting to setup wizard.");
-        return false; // return false to signal that the caller should fall back to setup route
+        logger.warn("No existing config found. Falling back to setup.");
+        return false;
     }
     
-    logger.info("Found existing .ai-editor-presets.json configuration! Updating silently...");
     await compilerService.syncAllConfigs(repoRoot, targetDir, config);
     return true;
 }
