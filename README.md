@@ -1,57 +1,70 @@
-# AI Editor Presets: AI Unified Rule Architecture 🌀
+# AI Editor Presets 🌀
+[![npm version](https://img.shields.io/npm/v/ai-editor-presets.svg)](https://www.npmjs.com/package/ai-editor-presets)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-An enterprise-grade, scalable repository for sharing AI coding guidelines, domain-driven design principles, and custom agent rules across your entire engineering team.
+**AI Editor Presets** is an enterprise-grade CLI tool for dynamically injecting AI coding standards, domain-driven design principles, and custom agent rules into your project.
 
-Unlike traditional dotfile overrides, **AI Editor Presets** acts as a smart, dynamically compiled library that integrates perfectly with **Cursor, GitHub Copilot, and Antigravity** without polluting your global IDE configurations.
-
-## 🚀 Key Features
-
-- **Editor Agnostic**: Write your AI rules once in Markdown. AI Editor Presets compiles them into `.cursor/rules`, `.agents/`, or flattens them into `.github/copilot-instructions.md`.
-- **Ecosystem Targeting**: No more AI context bloat! Select exactly which framework you are working with (e.g., `react` or `python`) so your IDE only loads the rules relevant to that specific codebase.
-- **Git Poisoning Prevention**: AI Editor Presets actively intercepts your repository's `.gitignore` and auto-injects tracking protection, guaranteeing you never accidentally commit your local AI states.
-- **Interactive Setup Wizard**: Beautiful terminal UI lets developers use arrow keys to pick languages and editors natively.
-- **Smart Sync & Delta Detection**: AI Editor Presets tracks your choices in a hidden `.ai-editor-presets.json` file. Future runs use content hashing to skip redundant writes!
+Stop manually copying `.mdc` or `.md` files. **AI Editor Presets** acts as a smart, dynamically compiled library that integrates perfectly with **Cursor, GitHub Copilot, and Antigravity** without polluting your global IDE configurations.
 
 ---
 
-## 🛠️ Getting Started
+## 🚀 Quick Start
 
-Integrating **AI Editor Presets** rules into any repository takes exactly one command.
+Run **AI Editor Presets** in any project directory to instantly set up your AI environment:
 
-Navigate to your project folder and run:
 ```bash
 npx ai-editor-presets
 ```
-*(Or if running from source: `npx github:kaushalrao/ai-editor-presets#develop`)*
 
-### The Setup Wizard
-Running AI Editor Presets without arguments opens the interactive setup:
-1. **Choose your IDE Adapter:** (Cursor, GitHub Copilot, Antigravity)
-2. **Select your Ecosystems:** Press **Space** to toggle (e.g. `[x] react`, `[ ] python`).
+### What happens next?
+1. **Interactive Wizard**: A beautiful UI lets you pick your IDE (Cursor, Copilot, Antigravity).
+2. **Ecosystem Selector**: Choose your stack (e.g., `react`, `python`, `java`).
+3. **Smart Injection**: The CLI compiles the exact rules you need and auto-configures your `.gitignore` to prevent tracking of local AI states.
 
-### Silent Flag Overrides
-For CI/CD or power users, bypass the wizard via flags:
+---
+
+## ✨ Key Features
+
+- **Editor Agnostic**: Write rules once. AI Editor Presets compiles them into `.cursor/rules`, `.agents/`, or flattens them for Copilot.
+- **Micro-Context Injection**: Select exactly which frameworks you are using so your IDE isn't bloated with irrelevant rules.
+- **Git Safety First**: Automatically injects tracking protection into your `.gitignore` so you never accidentally commit rule states.
+- **Zero-Friction Updates**: Run `npx ai-editor-presets` again at any time to silently sync to the latest standards.
+- **Smart Delta Detection**: Uses content hashing to only overwrite files that have actually changed.
+
+---
+
+## 🛠️ Usage & Flags
+
+Bypass the wizard for CI/CD or automated setups using flags:
+
 ```bash
-npx ai-editor-presets --editor=cursor --language=react,api-design
+# Setup Cursor rules for a React project
+npx ai-editor-presets --editor=cursor --language=react
+
+# Setup for multiple ecosystems
+npx ai-editor-presets --editor=antigravity --language=react,api-design
 ```
 
 ---
 
-## 📂 Architecture & Contribution
+## 📂 Repository Architecture
 
-AI Editor Presets rules are separated by domain for accurate compilation:
+**AI Editor Presets** rules are modular and domain-driven:
 
-```text
-ai-editor-presets/
-├── 1-core-principles/         # Universal rules (Architecture, Security)
-├── 2-ecosystems/              # Framework rules (Python, React)
-├── 3-prompt-macros/           # Slash commands / Workflows
-├── 4-agents/                  # Agent persona definitions
-└── adapters/                  # Compiler logic per IDE
-```
+- `1-core-principles/`: Universal rules (Architecture, Security, Documentation).
+- `2-ecosystems/`: Framework-specific rules (React, Python, Java, etc.).
+- `3-prompt-macros/`: Shared slash commands and workflows.
+- `4-agents/`: Core agent persona definitions.
+- `adapters/`: The compiler logic that transforms rules for specific IDEs.
 
-**To add a new language:**
-Create a folder under `2-ecosystems/` (e.g. `2-ecosystems/go/`). AI Editor Presets dynamically scans this and presents 'go' in the UI!
+---
 
-**Strict Markdown Validation:**
-To guarantee that LLMs flawlessly ingest tokens, any PR is evaluated by a GitHub Action validating `markdownlint` syntax and running end-to-end compiler verification.
+## 🤝 Contributing & Customization
+
+**AI Editor Presets** is built to be extended. To add a new language, simply create a folder under `2-ecosystems/` (e.g., `2-ecosystems/go/`). The registry will automatically detect it and present it as an option in the CLI.
+
+---
+
+*Join the future of AI-native engineering with AI Editor Presets.*
+
+
