@@ -12,7 +12,7 @@ module.exports = {
         let report = [];
 
         // Global Core
-        const coreStats = copyRules(path.join(repoRoot, 'core'), path.join(cursorDir, 'rules'), '', writtenFiles);
+        const coreStats = copyRules(path.join(repoRoot, 'core'), path.join(cursorDir, 'rules'), '', writtenFiles, '.mdc');
         report.push({ name: 'Core Principles', stats: coreStats });
 
         // Ecosystems
@@ -31,12 +31,12 @@ module.exports = {
                 
                 let foundPath = possiblePaths.find(p => fs.existsSync(p));
                 if (foundPath) {
-                    const stats = copyRules(foundPath, path.join(cursorDir, 'rules'), lang, writtenFiles);
+                    const stats = copyRules(foundPath, path.join(cursorDir, 'rules'), lang, writtenFiles, '.mdc');
                     report.push({ name: `${lang} Ecosystem`, stats });
                 }
             });
         } else {
-            const totalEcoStats = copyRules(ecosystemsPath, path.join(cursorDir, 'rules'), '', writtenFiles);
+            const totalEcoStats = copyRules(ecosystemsPath, path.join(cursorDir, 'rules'), '', writtenFiles, '.mdc');
             report.push({ name: 'All Ecosystems', stats: totalEcoStats });
         }
 
@@ -45,7 +45,7 @@ module.exports = {
         report.push({ name: 'Prompt Macros', stats: macroStats });
 
         // Agents
-        const agentStats = copyRules(path.join(repoRoot, 'library/agents'), path.join(cursorDir, 'agents'), '', writtenFiles);
+        const agentStats = copyRules(path.join(repoRoot, 'library/agents'), path.join(cursorDir, 'agents'), '', writtenFiles, '.mdc');
         report.push({ name: 'Core Agents', stats: agentStats });
 
         // Shared Skills

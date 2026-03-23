@@ -51,17 +51,17 @@ npx ai-editor-presets --editor=antigravity --language=react,api-design
 
 **AI Editor Presets** rules are modular and domain-driven:
 
-- `1-core-principles/`: Universal rules (Architecture, Security, Documentation).
-- `2-ecosystems/`: Framework-specific rules (React, Python, Java, etc.).
-- `3-prompt-macros/`: Shared slash commands and workflows.
-- `4-agents/`: Core agent persona definitions.
+- `core/`: Universal rules (Architecture, Security, Documentation).
+- `ecosystems/`: Framework-specific rules (React, Python, Java, etc.).
+- `library/prompts/`: Shared slash commands and workflows.
+- `library/agents/`: Core agent persona definitions.
 - `adapters/`: The compiler logic that transforms rules for specific IDEs.
 
 ---
 
 ## 🤝 Contributing & Customization
 
-**AI Editor Presets** is built to be extended. To add a new language, simply create a folder under `2-ecosystems/` (e.g., `2-ecosystems/go/`). The registry will automatically detect it and present it as an option in the CLI.
+**AI Editor Presets** is built to be extended. To add a new language, simply create a file under `ecosystems/` in the appropriate category (e.g., `ecosystems/languages/go.md`). The CLI will automatically detect it and present it as an option.
 
 ---
 
