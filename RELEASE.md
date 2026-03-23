@@ -2,8 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## 1.1.0 (2026-03-23)
-
+## [v1.1.0](https://github.com/kaushalrao/ai-editor-presets/compare/v1.0.0...v1.1.0) (2026-03-23)
 
 ### Features
 
@@ -25,18 +24,12 @@ All notable changes to this project will be documented in this file. See [standa
 * Rebrand project to AI Commons, implement a CLI with persistent configuration for silent updates, and add test documentation ([168376d](https://github.com/kaushalrao/ai-editor-presets/commit/168376dc2b7b76cbbf02c7295ac1163f6669ba75))
 * Update compiler report format to include detailed `stats` objects ([3ab85d7](https://github.com/kaushalrao/ai-editor-presets/commit/3ab85d7124e3c3b91fd94e8304c7c9ba63088039))
 
-
 ### Bug Fixes
 
 * **ci:** point github actions explicitly to new modular cli/index.js entrypoint ([14a2216](https://github.com/kaushalrao/ai-editor-presets/commit/14a22166bf3a2613198e10db3744e81e8ed948ac))
 * **cli:** restore empty string parameter handling to bypass headless UI crashes ([ebbd923](https://github.com/kaushalrao/ai-editor-presets/commit/ebbd9233984998f3ab81870256abf967490bc0f4))
 
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 ## [v1.0.0](https://github.com/kaushalrao/ai-editor-presets/compare/v5080ee5...v1.0.0) (2026-03-23)
-
 
 ### Features
 
