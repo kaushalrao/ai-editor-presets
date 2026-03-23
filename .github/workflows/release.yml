@@ -1,14 +1,10 @@
 name: Automated Release (Versioning & GitHub Release)
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
+  workflow_dispatch: # Actions only run when you manually click "Run workflow" in GitHub
 
 jobs:
   release:
-    if: "!contains(github.event.head_commit.message, 'chore(release)') && !contains(github.event.head_commit.message, '[skip release]')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
