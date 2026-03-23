@@ -25,29 +25,35 @@ module.exports = {
         };
 
         // Core
-        const coreCount = appendFiles('Core Principles', collectRules(path.join(repoRoot, '1-core-principles')));
+        const coreCount = appendFiles('Core Principles', collectRules(path.join(repoRoot, 'core')));
         report.push({ name: 'Core Principles', stats: { created: 0, updated: 0, skipped: coreCount } });
 
         // Ecosystems
         if (ctx.languages && ctx.languages.length > 0) {
             ctx.languages.forEach(lang => {
-                const langPath = path.join(repoRoot, '2-ecosystems', lang);
-                const count = appendFiles(`Ecosystem: ${lang}`, collectRules(langPath));
+                const ecosystemsPath = path.join(repoRoot, 'ecosystems');
+                // Note: collectRules is recursive, so it will find the file anywhere in ecosystems/
+                const files = collectRules(ecosystemsPath).filter(f => path.basename(f, '.md') === lang);
+                const count = appendFiles(`Ecosystem: ${lang}`, files);
                 if (count > 0) report.push({ name: `${lang} Ecosystem`, stats: { created: 0, updated: 0, skipped: count } });
             });
         } else {
-            const ecosystemsPath = path.join(repoRoot, '2-ecosystems');
+            const ecosystemsPath = path.join(repoRoot, 'ecosystems');
             const count = appendFiles('All Ecosystems', collectRules(ecosystemsPath));
             report.push({ name: 'All Ecosystems', stats: { created: 0, updated: 0, skipped: count } });
         }
 
         // Macros
-        const macroCount = appendFiles('Prompt Macros', collectRules(path.join(repoRoot, '3-prompt-macros')));
+        const macroCount = appendFiles('Prompt Macros', collectRules(path.join(repoRoot, 'library/prompts')));
         report.push({ name: 'Prompt Macros', stats: { created: 0, updated: 0, skipped: macroCount } });
 
         // Agents
-        const agentCount = appendFiles('Agent Personas', collectRules(path.join(repoRoot, '4-agents')));
+        const agentCount = appendFiles('Agent Personas', collectRules(path.join(repoRoot, 'library/agents')));
         report.push({ name: 'Agent Personas', stats: { created: 0, updated: 0, skipped: agentCount } });
+
+        // Shared Skills
+        const skillCount = appendFiles('Shared Skills', collectRules(path.join(repoRoot, 'library/skills')));
+        report.push({ name: 'Shared Skills', stats: { created: 0, updated: 0, skipped: skillCount } });
         
         let writeStat = { created: 0, updated: 0, skipped: 0 };
         if (fs.existsSync(copilotFile)) {
