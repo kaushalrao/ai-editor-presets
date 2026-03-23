@@ -5,7 +5,7 @@ const path = require('path');
  * Recursively copies rules from src to dest with optional filename prefixing.
  * Used by all IDE adapters for synchronized rule generation.
  */
-function copyRules(src, dest, prefix = '', ledger = []) {
+function copyRules(src, dest, prefix = '', ledger = [], targetExt = null) {
     if (!fs.existsSync(src)) return { created: 0, updated: 0, skipped: 0 };
     
     let stats = { created: 0, updated: 0, skipped: 0 };
@@ -15,9 +15,18 @@ function copyRules(src, dest, prefix = '', ledger = []) {
         if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
         const fileName = path.basename(src);
         let destFileName = fileName;
+
+        // Apply prefix
         if (prefix && !fileName.toLowerCase().startsWith(prefix.toLowerCase())) {
             destFileName = `${prefix}-${fileName}`;
         }
+
+        // Apply target extension if provided
+        if (targetExt) {
+            const nameWithoutExt = path.basename(destFileName, path.extname(destFileName));
+            destFileName = nameWithoutExt + targetExt;
+        }
+
         const destFile = path.join(dest, destFileName);
         ledger.push(destFile);
 
@@ -42,7 +51,7 @@ function copyRules(src, dest, prefix = '', ledger = []) {
     fs.readdirSync(src).forEach(file => {
         const srcFile = path.join(src, file);
         if (fs.lstatSync(srcFile).isDirectory()) {
-            const res = copyRules(srcFile, path.join(dest, file), prefix, ledger);
+            const res = copyRules(srcFile, path.join(dest, file), prefix, ledger, targetExt);
             stats.created += res.created;
             stats.updated += res.updated;
             stats.skipped += res.skipped;
@@ -51,6 +60,12 @@ function copyRules(src, dest, prefix = '', ledger = []) {
             if (prefix && !file.toLowerCase().startsWith(prefix.toLowerCase())) {
                 destFileName = `${prefix}-${file}`;
             }
+
+            if (targetExt) {
+                const nameWithoutExt = path.basename(destFileName, path.extname(destFileName));
+                destFileName = nameWithoutExt + targetExt;
+            }
+
             const destFile = path.join(dest, destFileName);
             ledger.push(destFile);
 

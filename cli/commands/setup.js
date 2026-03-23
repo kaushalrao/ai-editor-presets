@@ -6,8 +6,20 @@ const stateService = require('../services/state');
 const gitService = require('../services/git');
 
 async function execute(repoRoot, targetDir, editorFlag, languagesFlag) {
-    const ecosystemsDir = path.join(repoRoot, '2-ecosystems');
-    const availableLanguages = fs.existsSync(ecosystemsDir) ? fs.readdirSync(ecosystemsDir).filter(f => !f.startsWith('.') && fs.lstatSync(path.join(ecosystemsDir, f)).isDirectory()) : [];
+    const ecosystemsDir = path.join(repoRoot, 'ecosystems');
+    let availableLanguages = [];
+    if (fs.existsSync(ecosystemsDir)) {
+        const categories = ['languages', 'frameworks', 'patterns'];
+        categories.forEach(cat => {
+            const catPath = path.join(ecosystemsDir, cat);
+            if (fs.existsSync(catPath)) {
+                const files = fs.readdirSync(catPath)
+                    .filter(f => !f.startsWith('.') && (fs.lstatSync(path.join(catPath, f)).isDirectory() || f.endsWith('.md')))
+                    .map(f => path.basename(f, path.extname(f)));
+                availableLanguages = [...availableLanguages, ...files];
+            }
+        });
+    }
 
     const adaptersDir = path.join(repoRoot, 'adapters');
     const availableEditors = fs.existsSync(adaptersDir) ? fs.readdirSync(adaptersDir).filter(f => !f.startsWith('.') && fs.lstatSync(path.join(adaptersDir, f)).isDirectory()) : ['cursor'];
