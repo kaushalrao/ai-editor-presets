@@ -25,6 +25,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "husky": "^9.1.7",
     "markdownlint-cli": "^0.48.0",
     "standard-version": "^9.5.0",
