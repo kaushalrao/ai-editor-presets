@@ -1,40 +1,43 @@
-const stateService = require('../services/state');
 const compilerService = require('../services/compiler');
 const logger = require('../ui/logger');
-
-const isValidEcosystem = name => /^[a-zA-Z0-9_-]+$/.test(name);
+const { discoverEcosystems } = require('../utils/discovery');
+const { getConfigOrExit, processEcosystemFlag, getInstalledEcosystems, promptEcosystems } = require('../utils/ecosystems');
 
 async function execute(repoRoot, targetDir, ecosystem) {
+    const config = getConfigOrExit(targetDir);
+    let ecosystemsToAdd = ecosystem ? processEcosystemFlag(ecosystem) : [];
+
     if (!ecosystem) {
-        logger.error("Please specify an ecosystem to add (e.g. npx ai-editor-presets add python)");
-        process.exit(1);
-    }
-    
-    if (!isValidEcosystem(ecosystem)) {
-        logger.error(`Invalid ecosystem name '${ecosystem}'.`);
-        process.exit(1);
-    }
-    
-    const config = stateService.readConfig(targetDir);
-    if (!config) {
-        logger.error(`No config found. Please run 'npx ai-editor-presets init' first!`);
-        process.exit(1);
+        const available = discoverEcosystems(repoRoot);
+        const installed = getInstalledEcosystems(config);
+        const uninstalled = available.filter(e => !installed.includes(e));
+        
+        if (uninstalled.length === 0) {
+            logger.warn("All available ecosystems are already installed!");
+            return;
+        }
+        
+        ecosystemsToAdd = await promptEcosystems("Select ecosystems to add:", uninstalled);
+        if (!ecosystemsToAdd.length) return;
     }
     
     let modified = false;
     Object.entries(config).forEach(([editor, languages]) => {
-        if (editor !== 'managedFiles' && !languages.includes(ecosystem)) {
-            languages.push(ecosystem);
-            modified = true;
-        }
+        if (editor === 'managedFiles') return;
+        ecosystemsToAdd.forEach(eco => {
+            if (!languages.includes(eco)) {
+                languages.push(eco);
+                modified = true;
+            }
+        });
     });
     
     if (!modified) {
-        logger.warn(`'${ecosystem}' is already present.`);
+        logger.warn(`The selected ecosystems are already present.`);
         return;
     }
 
-    logger.success(`Added '${ecosystem}' to config!`);
+    logger.success(`Added ${ecosystemsToAdd.join(', ')} to config!`);
     await compilerService.syncAllConfigs(repoRoot, targetDir, config);
 }
 
