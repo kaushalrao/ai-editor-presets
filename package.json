@@ -9,12 +9,30 @@
   "scripts": {
     "test": "vitest run",
     "lint": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules",
-    "prepare": "husky",
     "lint:fix": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix",
-    "release": "standard-version --no-verify"
+    "prepare": "husky",
+    "release": "release-it"
   },
-  "standard-version": {
-    "infile": "RELEASE.md"
+  "release-it": {
+    "git": {
+      "tagName": "v${version}",
+      "commitMessage": "chore: release v${version}",
+      "requireCleanWorkingDir": false,
+      "requireUpstream": false
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}"
+    },
+    "npm": {
+      "publish": false
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "infile": "RELEASE.md",
+        "preset": "conventionalcommits"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -35,9 +53,10 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
+    "@release-it/conventional-changelog": "^10.0.6",
     "husky": "^9.1.7",
     "markdownlint-cli": "^0.48.0",
-    "standard-version": "^9.5.0",
+    "release-it": "^19.2.4",
     "vitest": "^4.1.1"
   },
   "dependencies": {

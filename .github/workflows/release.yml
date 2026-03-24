@@ -30,17 +30,11 @@ jobs:
         run: npm install
 
       - name: Run Release Bumps (No Commit/Tag)
-        # Use --skip.commit and --skip.tag so standard-version just modifies files locally
-        run: npm run release -- --skip.commit --skip.tag
+        # Use release-it to update package.json and RELEASE.md without creating git artifacts
+        run: npm run release -- --no-git.commit --no-git.tag --no-git.requireCleanWorkingDir --no-git.requireUpstream
 
-      - name: Fix RELEASE.md Headings (Branding & Lint)
+      - name: Lint & Polish RELEASE.md
         run: |
-          # Change ### [version] to ## [vversion] to satisfy MD001 and branding
-          sed -i 's/### \[/## \[v/g' RELEASE.md
-          # Catch cases where it's not linked
-          sed -i 's/## /## v/g' RELEASE.md || true
-          # Fix double-v if it occurred
-          sed -i 's/## vv/## v/g' RELEASE.md
           npm run lint:fix || true
 
       - name: Extract New Version Payload
@@ -55,7 +49,7 @@ jobs:
           HUSKY: 0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(release): bump version to ${{ steps.versioning.outputs.NEW_VERSION }}"
+          commit-message: "chore: release ${{ steps.versioning.outputs.NEW_VERSION }}"
           branch: "release/${{ steps.versioning.outputs.NEW_VERSION }}"
           base: "main"
           title: "🚀 Release ${{ steps.versioning.outputs.NEW_VERSION }}"
