@@ -1,11 +1,19 @@
-branch="$(git rev-parse --abbrev-ref HEAD)"
-
-# Skip check if in detached HEAD state (e.g. during release)
-if [ "$branch" = "HEAD" ]; then
+# Skip check if HUSKY=0 or SKIP_HUSKY=1
+if [ "$HUSKY" = "0" ] || [ "$SKIP_HUSKY" = "1" ]; then
   exit 0
 fi
 
-if ! echo "$branch" | grep -Eq "^(feat|bug|chore|docs|refactor|test|fix|release)(/|$)"; then
-  echo "❌ Error: Branch name must start with one of: feat/, bug/, chore/, docs/, refactor/, test/, or fix/."
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD")"
+
+# Skip check if in detached HEAD state (common during tagging/releases)
+if [ "$branch" = "HEAD" ] || [ "$branch" = "" ]; then
+  exit 0
+fi
+
+# Allowed prefixes
+ALLOWED_PREFIXES="feat|bug|chore|docs|refactor|test|fix|release"
+
+if ! echo "$branch" | grep -Eq "^($ALLOWED_PREFIXES)(/|$)"; then
+  echo "❌ Error: Branch name '$branch' must start with one of: ${ALLOWED_PREFIXES//|/, }/."
   exit 1
 fi

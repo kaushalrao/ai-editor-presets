@@ -6,6 +6,8 @@ on:
 jobs:
   draft-release:
     runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
     permissions:
       contents: write       # Needed to push the new release branch
       pull-requests: write  # Needed to create the PR
@@ -45,8 +47,6 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
-        env:
-          HUSKY: 0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: release ${{ steps.versioning.outputs.NEW_VERSION }}"
