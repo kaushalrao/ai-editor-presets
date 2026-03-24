@@ -7,18 +7,16 @@ const cliPath = path.resolve(__dirname, '../cli/index.js');
 const testDir = path.resolve(__dirname, '../.test-sandbox-compilers');
 
 function runCLI(args) {
-    return execSync(`node ${cliPath} ${args}`, { encoding: 'utf8', stdio: 'inherit' });
+    return execSync(`node ${cliPath} ${args}`, { encoding: 'utf8', stdio: 'ignore', cwd: testDir });
 }
 
 describe('AI Commons Compilers', () => {
     beforeAll(() => {
         if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
         fs.mkdirSync(testDir);
-        process.chdir(testDir);
     });
 
     afterAll(() => {
-        process.chdir(__dirname);
         if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
     });
 
