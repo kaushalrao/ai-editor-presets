@@ -16,6 +16,14 @@
   "standard-version": {
     "infile": "RELEASE.md"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaushalrao/ai-editor-presets.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kaushalrao/ai-editor-presets/issues"
+  },
+  "homepage": "https://github.com/kaushalrao/ai-editor-presets#readme",
   "keywords": [
     "ai",
     "cursor",
