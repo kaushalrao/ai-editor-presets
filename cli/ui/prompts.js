@@ -27,4 +27,14 @@ async function multiSelectPrompt(message, options) {
     return result;
 }
 
-module.exports = { singleSelectPrompt, multiSelectPrompt };
+async function profileSelectPrompt(profiles) {
+    const options = [
+        { value: null, label: pc.dim('none  '), hint: 'manually select ecosystems' },
+        ...profiles.map(p => ({ value: p.name, label: p.name, hint: p.description || p.source }))
+    ];
+    const result = await select({ message: 'Load a profile? (optional)', options });
+    handleCancel(result);
+    return result;
+}
+
+module.exports = { singleSelectPrompt, multiSelectPrompt, profileSelectPrompt };
