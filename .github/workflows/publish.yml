@@ -47,6 +47,10 @@ jobs:
             echo "Version $VERSION does not exist on NPM. Proceeding to publish."
           fi
 
+      - name: Install Dependencies
+        if: steps.check_npm.outputs.exists == 'false'
+        run: npm install
+
       - name: Publish to NPM
         if: steps.check_npm.outputs.exists == 'false'
         run: npm publish --access public
