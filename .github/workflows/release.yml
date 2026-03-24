@@ -50,7 +50,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: release ${{ steps.versioning.outputs.NEW_VERSION }}"
-          branch: "release/${{ steps.versioning.outputs.NEW_VERSION }}"
+          branch: "chore/release-${{ steps.versioning.outputs.NEW_VERSION }}"
           base: "main"
           title: "🚀 Release ${{ steps.versioning.outputs.NEW_VERSION }}"
           body: |
