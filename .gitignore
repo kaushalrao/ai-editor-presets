@@ -1,1 +1,6 @@
 /node_modules
+
+# --- AI STANDARDS INJECT START ---
+.ai-editor-presets.json
+.agents/
+# --- AI STANDARDS INJECT END ---
