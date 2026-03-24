@@ -1,6 +1,11 @@
 branch="$(git rev-parse --abbrev-ref HEAD)"
 
-if ! echo "$branch" | grep -Eq "^(feat|bug|chore|docs|refactor|test|fix)(/|$)"; then
+# Skip check if in detached HEAD state (e.g. during release)
+if [ "$branch" = "HEAD" ]; then
+  exit 0
+fi
+
+if ! echo "$branch" | grep -Eq "^(feat|bug|chore|docs|refactor|test|fix|release)(/|$)"; then
   echo "❌ Error: Branch name must start with one of: feat/, bug/, chore/, docs/, refactor/, test/, or fix/."
   exit 1
 fi
