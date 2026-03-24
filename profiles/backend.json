@@ -1,0 +1,8 @@
+{
+  "description": "Backend team setup. Enforces Python, API design and database design standards across the organization.",
+  "languages": [
+    "python",
+    "api-design",
+    "database-design"
+  ]
+}
