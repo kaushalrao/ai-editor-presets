@@ -33,16 +33,29 @@ npx ai-editor-presets
 
 ---
 
-## 🛠️ Usage & Flags
+## 🛠️ CLI Commands & Usage
 
-Bypass the wizard for CI/CD or automated setups using flags:
+Run the CLI natively to trigger the interactive setup wizard or to silently sync existing configs:
 
 ```bash
-# Setup Cursor rules for a React project
-npx ai-editor-presets --editor=cursor --language=react
+npx ai-editor-presets
+```
 
-# Setup for multiple ecosystems
-npx ai-editor-presets --editor=antigravity --language=react,api-design
+### Commands
+
+- `init` (default): Initialize a new project or sync existing presets without prompting.
+- `add [ecosystem]?`: Add a new framework or language. If omitted, an interactive menu launches.
+- `remove [ecosystem]?`: Remove an existing framework or language. If omitted, an interactive menu launches.
+- `help`: Display the standard CLI usage and options menu.
+
+### Headless Flags (CI/CD)
+
+Bypass the wizard for automated setups using flags:
+
+```bash
+npx ai-editor-presets --editor=cursor --language=react
+npx ai-editor-presets add python
+npx ai-editor-presets remove react
 ```
 
 ---
@@ -62,6 +75,16 @@ npx ai-editor-presets --editor=antigravity --language=react,api-design
 ## 🤝 Contributing & Customization
 
 **AI Editor Presets** is built to be extended. To add a new language, simply create a file under `ecosystems/` in the appropriate category (e.g., `ecosystems/languages/go.md`). The CLI will automatically detect it and present it as an option.
+
+---
+
+## 🧪 Testing
+
+The repository uses **Vitest** for native, high-performance end-to-end integration testing. Tests simulate real-world CLI commands across all adapters and assert exact compilation outputs.
+
+```bash
+npm test
+```
 
 ---
 

@@ -7,7 +7,7 @@ const cliPath = path.resolve(__dirname, '../cli/index.js');
 const testDir = path.resolve(__dirname, '../.test-sandbox');
 
 function runCLI(args) {
-    return execSync(`node ${cliPath} ${args}`, { encoding: 'utf8', stdio: 'inherit' });
+    return execSync(`node ${cliPath} ${args}`, { encoding: 'utf8', stdio: 'ignore', cwd: testDir });
 }
 
 function getConfig() {
@@ -20,11 +20,9 @@ describe('AI Commons CLI', () => {
     beforeAll(() => {
         if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
         fs.mkdirSync(testDir);
-        process.chdir(testDir);
     });
 
     afterAll(() => {
-        process.chdir(__dirname);
         if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
     });
 
@@ -47,5 +45,12 @@ describe('AI Commons CLI', () => {
         const config = getConfig();
         expect(config.cursor).not.toContain('react');
         expect(config.cursor).toContain('python');
+    });
+
+    it('should print the help menu when requested', () => {
+        const output = execSync(`node ${cliPath} help`, { encoding: 'utf8', cwd: testDir });
+        const plainOutput = output.replace(/\x1b\[[0-9;]*m/g, '');
+        expect(plainOutput).toContain('AI Editor Presets - CLI');
+        expect(plainOutput).toContain('Usage: npx ai-editor-presets [command] [options]');
     });
 });
