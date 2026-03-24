@@ -10,6 +10,8 @@ jobs:
     # Only run if the PR was merged and has the 'release' label we applied in release.yml
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
     runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
     permissions:
       contents: write
 
@@ -41,6 +43,9 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm install
 
       - name: Publish to NPM
         run: npm publish --access public
