@@ -27,29 +27,5 @@ jobs:
     - name: Run Markdown Linting
       run: npm run lint
         
-    - name: Setup Testing Sandbox
-      run: mkdir -p /tmp/ai-commons-test
-      
-    - name: Test Cursor Compilation (Specific Ecosystems)
-      run: |
-        cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/cli/index.js --editor=cursor --language=react,python
-        
-        # Verify that files were deployed correctly
-        if [ ! -d "/tmp/ai-commons-test/.cursor/rules" ]; then exit 1; fi
-        
-    - name: Test Antigravity Compilation (All Ecosystems natively)
-      run: |
-        cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/cli/index.js --editor=antigravity --language=""
-        
-        # Verify that files were deployed correctly
-        if [ ! -d "/tmp/ai-commons-test/.agents/personas" ]; then exit 1; fi
-        
-    - name: Test Copilot Compilation (Flat Concatenation)
-      run: |
-        cd /tmp/ai-commons-test
-        node $GITHUB_WORKSPACE/cli/index.js --editor=copilot --language=react
-        
-        # Verify that the flat concatenation file was strictly generated
-        if [ ! -f "/tmp/ai-commons-test/.github/copilot-instructions.md" ]; then exit 1; fi
+    - name: Run Test Suite
+      run: npm test

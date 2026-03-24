@@ -7,7 +7,7 @@
     "ai-editor-presets": "./cli/index.js"
   },
   "scripts": {
-    "test": "node ./cli/index.js --editor=cursor --language=react",
+    "test": "vitest run",
     "lint": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules",
     "prepare": "husky",
     "lint:fix": "markdownlint '**/*.md' '**/*.mdc' --ignore node_modules --fix",
@@ -27,7 +27,8 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "markdownlint-cli": "^0.48.0",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "vitest": "^4.1.1"
   },
   "dependencies": {
     "@clack/prompts": "^1.1.0",
