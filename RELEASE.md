@@ -1,8 +1,6 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-## [v1.1.1](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.0...v1.1.1) (2026-03-23)
+## [1.1.1](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.0...v1.1.1) (2026-03-23)
 
 ### Features
 
@@ -29,7 +27,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ci:** point github actions explicitly to new modular cli/index.js entrypoint ([14a2216](https://github.com/kaushalrao/ai-editor-presets/commit/14a22166bf3a2613198e10db3744e81e8ed948ac))
 * **cli:** restore empty string parameter handling to bypass headless UI crashes ([ebbd923](https://github.com/kaushalrao/ai-editor-presets/commit/ebbd9233984998f3ab81870256abf967490bc0f4))
 
-## [v1.0.0](https://github.com/kaushalrao/ai-editor-presets/compare/v5080ee5...v1.0.0) (2026-03-23)
+## [1.0.0](https://github.com/kaushalrao/ai-editor-presets/compare/v5080ee5...v1.0.0) (2026-03-23)
 
 ### Features
 
