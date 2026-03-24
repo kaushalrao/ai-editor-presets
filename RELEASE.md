@@ -2,9 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [v1.1.1](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.0...v1.1.1) (2026-03-23)
+## v[1.2.0](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.1...v1.2.0) (2026-03-24)
 
-### Features
+
+### vFeatures
+
+* add GitHub Actions workflow for automated NPM publishing and GitHub releases, and disable Husky for release pull request creation ([2a149bf](https://github.com/kaushalrao/ai-editor-presets/commit/2a149bf8a529a7e13bbb79d1729a6a9be87a2c74))
+
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## v[v1.1.1](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.0...v1.1.1) (2026-03-23)
+
+### vFeatures
 
 * Add AI scaling strategy document, configure CI workflow, and update the test script in package.json ([4d351d8](https://github.com/kaushalrao/ai-editor-presets/commit/4d351d8e6b5a23e60ebe0f01d2f6846d4c89d6ef))
 * Add automated GitHub UI release workflow triggered by version tags ([5080ee5](https://github.com/kaushalrao/ai-editor-presets/commit/5080ee5734aa99f8a153aa639dfc9ccf1b943b49))
@@ -24,14 +35,14 @@ All notable changes to this project will be documented in this file. See [standa
 * Rebrand project to AI Commons, implement a CLI with persistent configuration for silent updates, and add test documentation ([168376d](https://github.com/kaushalrao/ai-editor-presets/commit/168376dc2b7b76cbbf02c7295ac1163f6669ba75))
 * Update compiler report format to include detailed `stats` objects ([3ab85d7](https://github.com/kaushalrao/ai-editor-presets/commit/3ab85d7124e3c3b91fd94e8304c7c9ba63088039))
 
-### Bug Fixes
+### vBug Fixes
 
 * **ci:** point github actions explicitly to new modular cli/index.js entrypoint ([14a2216](https://github.com/kaushalrao/ai-editor-presets/commit/14a22166bf3a2613198e10db3744e81e8ed948ac))
 * **cli:** restore empty string parameter handling to bypass headless UI crashes ([ebbd923](https://github.com/kaushalrao/ai-editor-presets/commit/ebbd9233984998f3ab81870256abf967490bc0f4))
 
-## [v1.0.0](https://github.com/kaushalrao/ai-editor-presets/compare/v5080ee5...v1.0.0) (2026-03-23)
+## v[v1.0.0](https://github.com/kaushalrao/ai-editor-presets/compare/v5080ee5...v1.0.0) (2026-03-23)
 
-### Features
+### vFeatures
 
 * **AI Editor Presets**: Initial release of the AI Unified Rule Architecture.
 * **Adapters**: Integrated support for Cursor, Copilot, and Antigravity.
