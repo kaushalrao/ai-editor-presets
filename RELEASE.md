@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.1...v1.2.0) (2026-03-24)
+
+### Features
+
+* add GitHub Actions workflow for automated NPM publishing and GitHub releases, and disable Husky for release pull request creation ([2a149bf](https://github.com/kaushalrao/ai-editor-presets/commit/2a149bf8a529a7e13bbb79d1729a6a9be87a2c74))
+* introduce configuration profiles with a new resolver service, CLI commands, and UI prompts ([267e48a](https://github.com/kaushalrao/ai-editor-presets/commit/267e48a00c01d011a624d17a160ec70e3b38afae))
+
 ## [1.1.1](https://github.com/kaushalrao/ai-editor-presets/compare/v1.1.0...v1.1.1) (2026-03-23)
 
 ### Features
